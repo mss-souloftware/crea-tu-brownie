@@ -1,0 +1,1185 @@
+.chocoletrasPlg {
+    border: 1px solid #dad7d7;
+    background-color: #fff;
+    list-style: none;
+    position: relative
+}
+
+.chocoletrasPlg-spiner {
+    position: absolute;
+    height: 0%;
+    width: 100%;
+    background: #fffffffa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    opacity: 1;
+    z-index: 11;
+}
+
+.chocoletrasPlg-spiner img {
+    display: block;
+    width: 100px;
+    position: absolute
+}
+
+.chocoletrasPlg-spiner-ring {
+    border: 12px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    height: 140px;
+    border-radius: 100px;
+    border-top: 12px solid red;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-name: roeda;
+    animation-duration: .4s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: roeda;
+    -webkit-animation-duration: .4s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-name: roeda;
+    -moz-animation-duration: .4s
+}
+
+#stripeErrorMessage,
+.chocoletrasPlg__wrapperCode-dataUser,
+.chocoletrasPlg__wrapperCode-firstHead-dataUser,
+.reportAproblem_wrapper_response,
+.showDatePannel {
+    height: 0;
+    overflow: hidden
+}
+
+@keyframes roeda {
+    from {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+.chocoletrasPlg__wrapperCode {
+    padding: .5em;
+    background: #fae9a2
+}
+
+.chocoletrasPlg__wrapperCode-firstHead {
+    overflow: hidden
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    width: 100%
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-emptyLi {
+    width: 80%
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-emptyLi b:hover {
+    cursor: pointer
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable {
+    width: 20%;
+    min-width: 230px;
+    overflow: hidden
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table {
+    font-size: 14px;
+    padding: 0;
+    margin: 0
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tbody tr td {
+    border: 1px solid #e6e6e6;
+    padding: .2em
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tbody tr td pre {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+    color: #534f4f;
+    background: unset
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tbody tr td pre img {
+    width: 18px !important;
+    height: 18px !important;
+    object-fit: contain !important;
+    filter: invert(11%) sepia(97%) saturate(6263%) hue-rotate(18deg) brightness(92%) contrast(120%)
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase span {
+    font-size: 1.5em
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase button,
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase input {
+    width: 100%
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase input {
+    height: 40px;
+    margin: 10px 0
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-wrapperFrase button {
+    background: #202020;
+    height: 40px;
+    line-height: 5px;
+    font-weight: 100;
+    margin: 10px 0;
+    border-radius: 5px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser h3 {
+    text-align: center;
+    font-size: 20px;
+    display: block;
+    border-bottom: 1px solid #d50000
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-bhooth {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px !important
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-bhooth-input,
+.reportAproblem_wrapper-mailName input {
+    width: 49%
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-termCond {
+    display: flex;
+    padding: 15px 0
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-termCond input {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-termCond label {
+    line-height: 10px;
+    margin-left: 10px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form input[type=date],
+.chocoletrasPlg__wrapperCode-dataUser-form-input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px !important;
+    border: 1px solid #ccc;
+    min-height: 40px;
+    background: #fafafa
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form textarea {
+    border-radius: 4px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form textarea:placeholder {
+    color: gray
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form label {
+    display: block;
+    font-size: 16px;
+    line-height: 15px;
+    padding: 0;
+    border-bottom: none;
+    margin: 0;
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form span {
+    font-size: 16px;
+    line-height: 20px;
+    padding: 10px 0;
+    display: block
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-action {
+    display: flex;
+    justify-content: space-between
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-action input[type=submit] {
+    width: 77% !important;
+    background: #000;
+    line-height: 2px !important;
+    height: 40px !important;
+    margin-top: 0 !important
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-action input[type=submit]:hover {
+    color: gray;
+    background: #000
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-action button {
+    background: red;
+    width: 20%
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 5px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    background-position: 100% 0;
+    background-size: 130px;
+    background-repeat: no-repeat
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper input {
+    width: 20px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper label {
+    padding: 12px 10px;
+    border: none
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper label img {
+    width: 130px;
+    margin: 0 0 -10px
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper label b {
+    font-weight: 800;
+    font-size: 25px;
+    text-decoration: underline
+}
+
+#counter {
+    color: #880a0a
+}
+
+#payment_paypal {
+    opacity: 0;
+    cursor: not-allowed
+}
+
+.showDatePannel {
+    transition: .3s;
+    -moz-transition: .3s
+}
+
+.chocoletrasPlg__wrapperCode-payment,
+.hideStripe {
+    display: block;
+    overflow: hidden;
+    height: 0
+}
+
+.openPannel,
+.responseActived,
+.stripeErrorHiddeP {
+    height: unset !important
+}
+
+.chocoletrasPlg__wrapperCode-payment h3 {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    display: block;
+    line-height: 40px
+}
+
+.chocoletrasPlg__wrapperCode-payment p {
+    display: inline;
+    margin-right: 30px
+}
+
+.chocoletrasPlg__wrapperCode-payment-card,
+.reportAproblem_wrapper_quiz,
+.reportAproblem_wrapper_quiz_solve_js {
+    display: flex
+}
+
+.chocoletrasPlg__wrapperCode-payment-card-span {
+    margin-right: 10px
+}
+
+.chocoletrasPlg__wrapperCode-payment-card-img {
+    width: 110px
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    flex-flow: column
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons-left button,
+.chocoletrasPlg__wrapperCode-payment-buttons-right button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    color: #000;
+    border: 1px solid #c9c5c5;
+    height: 50px;
+    width: 100%;
+    border: 1px solid #000;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons-left button img,
+.chocoletrasPlg__wrapperCode-payment-buttons-right button img {
+    width: 120px;
+}
+
+.ChocoletrasBackendOpciones tfoot,
+.reportAproblem {
+    background: #fafafa
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons-left button:hover,
+.chocoletrasPlg__wrapperCode-payment-buttons-right button:hover {
+    background: #fff;
+    border: 1px solid #a3a3a3
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons-left button span,
+.chocoletrasPlg__wrapperCode-payment-buttons-right button span {
+    margin-right: 5px;
+    color: #000
+}
+
+#stripeErrorMessage {
+    background: #f0a2a2;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    padding-left: 10px;
+    line-height: 50px;
+    opacity: 0
+}
+
+.stripeErrorHiddeP {
+    opacity: 1 !important
+}
+
+.closedPannel {
+    height: 0 !important
+}
+
+#toplevel_page_clt_amin img {
+    width: 15px
+}
+
+.ChocoletrasBackendOpciones {
+    width: 100%;
+    max-width: 800px;
+}
+
+.ChocoletrasBackendOpciones thead tr {
+    padding: 20px;
+    background: #fafafa
+}
+
+.ChocoletrasBackendOpciones tfoot th,
+.ChocoletrasBackendOpciones thead tr th {
+    padding: 5px
+}
+
+.ChocoletrasBackendOpciones tbody {
+    padding: 5px 0
+}
+
+.ChocoletrasBackendOpciones tbody tr td:first-child {
+    width: 50%;
+    font-size: 16px;
+}
+
+.ChocoletrasBackendOpciones tbody tr td:first-child div input,
+.ChocoletrasBackendOpciones tbody tr td:nth-child(2) div input {
+    width: 100%;
+    height: 35px
+}
+
+.ChocoletrasBackendOpciones tbody tr td:nth-child(2) {
+    width: 50%;
+    padding-left: 20px
+}
+
+.ChocoletrasBackendOpciones-trSubmit {
+    width: 100%;
+    padding: 10px
+}
+
+.ChocoletrasBackendOpciones-trSubmit td div {
+    padding: 10px
+}
+
+.ChocoletrasBackendOpciones-trSubmit td div input {
+    width: 100%;
+    border: 0;
+    background: #000;
+    color: #fff;
+    cursor: pointer
+}
+
+.stripedata {
+    width: 90%;
+    min-width: 400px
+}
+
+.stripedata tfoot,
+.stripedata thead {
+    background: #f9f9f9;
+    margin: 20px
+}
+
+.stripedata tfoot tr,
+.stripedata thead tr {
+    padding-bottom: 10px
+}
+
+.stripedata tfoot tr th:first-child,
+.stripedata thead tr th:first-child {
+    width: 85%
+}
+
+.stripedata tfoot tr th:nth-child(2),
+.stripedata thead tr th:nth-child(2) {
+    width: 15%
+}
+
+.stripedata tfoot span,
+.stripedata thead span {
+    line-height: 30px
+}
+
+.stripedata tbody {
+    padding: 10px 0
+}
+
+.stripedata tbody tr td,
+.stripedata tbody tr td b {
+    text-align: center
+}
+
+.stripedata tbody tr td input {
+    width: 100%;
+    margin: 10px;
+    border: 1px solid #cbcbcb
+}
+
+.stripedata tbody tr td #stripeSubmit {
+    background: #000;
+    border: none;
+    color: #fff;
+    font-weight: 400;
+    width: 300px;
+    line-height: 30px;
+    border-radius: 4px;
+    cursor: pointer
+}
+
+.reportAproblem {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    top: 0;
+    min-height: 243px;
+    max-height: 243px;
+    transition: .3s;
+    -moz-transition: .3s;
+    -webkit-transition: .3s;
+    z-index: 999
+}
+
+.reportAproblem span {
+    top: 0;
+    left: 100%;
+    padding: 8px 0
+}
+
+.reportAproblem_wrapper {
+    margin: 10px;
+    overflow: hidden
+}
+
+.reportAproblem_wrapper-mailName {
+    display: flex;
+    width: 100%;
+    justify-content: space-between
+}
+
+.reportAproblem_wrapper form span,
+.reportAproblem_wrapper span {
+    font-size: 17px;
+    line-height: 15px;
+    display: block;
+    margin-bottom: 10px
+}
+
+.reportAproblem_wrapper form input {
+    display: block;
+    height: 40px;
+    font-size: 18px;
+    border-color: #d9d9d9;
+    border-radius: 4px;
+    padding: 0 5px;
+    width: 49.1%
+}
+
+.reportAproblem_wrapper form textarea {
+    display: block;
+    height: 60px;
+    margin: 10px 0;
+    font-size: 18px;
+    line-height: 20px;
+    border-color: #d9d9d9;
+    border-radius: 4px
+}
+
+.reportAproblem_wrapper_triguer {
+    position: absolute;
+    background: #000;
+    width: 20px;
+    color: #fff;
+    text-align: center;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    cursor: pointer
+}
+
+.reportAproblem_wrapper_triguer .emoji {
+    max-width: 15px
+}
+
+.reportAproblem_wrapper_response_span {
+    line-height: 30px;
+    padding: 5px;
+    color: #000
+}
+
+.reportAproblem_wrapper_quiz span {
+    width: 65%
+}
+
+.reportAproblem_wrapper_quiz_solve {
+    width: 35%
+}
+
+.reportAproblem_wrapper_quiz_solve input {
+    width: 5%;
+    display: block
+}
+
+.reportAproblem_wrapper_quiz_send {
+    width: 10%;
+    padding: 0;
+    margin-left: 10px
+}
+
+.reportAproblem_wrapper_quiz_send button {
+    width: 50px;
+    padding: 6px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px
+}
+
+.reportAproblem_wrapper_quiz_send button img {
+    width: 25px
+}
+
+.reportAproblem_wrapper_quiz_solve {
+    display: flex;
+    justify-content: space-around
+}
+
+.reportAproblem_wrapper_quiz_solve_js span {
+    font-weight: 700;
+    font-size: 40px !important;
+    display: block;
+    width: 23px;
+    margin-top: 15px
+}
+
+@media(max-width:700px) {
+    .reportAproblem_wrapper-mailName {
+        flex-direction: column
+    }
+
+    .reportAproblem_wrapper form input {
+        width: 100%;
+        margin-bottom: 10px
+    }
+
+    .reportAproblem {
+        max-height: unset
+    }
+}
+
+.reportClosed {
+    width: 0 !important;
+    right: 0 !important
+}
+
+.reportClosedApplyOpacity {
+    opacity: 0
+}
+
+.responseOk {
+    background: #e8ffd6
+}
+
+.responseBad {
+    background: #ffdfe8
+}
+
+#ramdomNumberOne,
+#ramdomNumberTwo {
+    width: 30px;
+    height: 40px
+}
+
+#ramdomNumberResults {
+    max-width: 40px
+}
+
+.reportsTable {
+    width: 98%;
+    margin-top: 20px;
+    background: #fff
+}
+
+.deletteReport,
+.reportsTable__pagination a button:disabled,
+.reportsTable__pagination a button:hover {
+    background: #ff4e4e
+}
+
+.reportsTable__thead {
+    margin: 20px
+}
+
+.reportsTable__thead-th,
+.reportsTable__thead-tr {
+    border: 1px solid #ccc;
+    line-height: 40px
+}
+
+.reportsTable__thead-th:nth-last-child(5) {
+    width: 3%
+}
+
+.reportsTable__thead-th:nth-last-child(2) {
+    width: 15%
+}
+
+.reportsTable__thead-th:nth-last-child(3) {
+    width: 8%
+}
+
+.reportsTable__thead-th:nth-last-child(4) {
+    width: 7%
+}
+
+.reportsTable__thead-th:last-child {
+    width: 50%
+}
+
+.reportsTable__tbody {
+    font-weight: 400
+}
+
+.reportsTable__tbody-th,
+.reportsTable__tbody-tr {
+    border: 1px solid #ccc;
+    position: relative
+}
+
+.reportsTable__tbody-tr:nth-child(2n) {
+    background: #ececec
+}
+
+.AdministracionVentas-table-tbody ul:nth-child(2n) li,
+.AdministracionVentas-table-tbody ul:nth-child(odd) li,
+.reportsTable__tbody-th {
+    padding: 10px
+}
+
+.reportsTable__pagination {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center
+}
+
+.reportsTable__pagination a {
+    margin: 0 3px
+}
+
+.reportsTable__pagination a button {
+    line-height: 30px;
+    padding: 0 10px;
+    background: #000;
+    border: none;
+    color: #fff;
+    border-radius: 3px
+}
+
+.deletteReport {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #fff;
+    line-height: 23px;
+    padding: 0 8px 2px;
+    border-radius: 3px;
+    margin: 3px;
+    cursor: pointer;
+    box-shadow: 2px 2px 3px gray
+}
+
+.deletteReport:hover {
+    box-shadow: 1px 1px 0 gray
+}
+
+.reporteTH {
+    padding-right: 35px
+}
+
+.AdministracionVentas {
+    padding: 30px
+}
+
+.AdministracionVentas-table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+.AdministracionVentas-table-thead {
+    background: #000000;
+    border: 1px solid #d4cbcb;
+    font-size: 14px;
+    color: #fff;
+    margin: 0 0 10px 0;
+    padding: 10px 0;
+}
+
+.AdministracionVentas-table-tbody_id,
+.AdministracionVentas-table-thead_id {
+    width: 1%;
+    min-width: 15px;
+    margin: 0;
+    padding: 0
+}
+
+.AdministracionVentas-table-thead-frase {
+    width: 12%;
+    min-width: 100px;
+}
+
+.AdministracionVentas-table-tbody_precio,
+.AdministracionVentas-table-thead_precio {
+    width: 6%;
+    min-width: 70px
+}
+
+.AdministracionVentas-table-tbody_fecha,
+.AdministracionVentas-table-tbody_payment,
+.AdministracionVentas-table-thead_fecha,
+.AdministracionVentas-table-thead_payment {
+    width: 10%;
+    min-width: 120px
+}
+
+.AdministracionVentas-table-tbody_enviado,
+.AdministracionVentas-table-tbody_proceso,
+.AdministracionVentas-table-thead_enviado,
+.AdministracionVentas-table-thead_proceso {
+    width: 10%;
+    min-width: 100px
+}
+
+.AdministracionVentas-table-thead_frasTotal,
+.AdministracionVentas-table-tbody_enviado {
+    width: 8%;
+}
+
+.AdministracionVentas-table-thead ul {
+    display: flex;
+    padding: 0;
+    margin: 0
+}
+
+.AdministracionVentas-table-thead ul li {
+    border: none;
+    padding: 10px;
+    margin: 0
+}
+
+.AdministracionVentas-table-tbody ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    align-items: center
+}
+
+.AdministracionVentas-table-tbody ul li button {
+    font-weight: 900;
+    background: #000;
+    border: none;
+    padding: 0 8px;
+    line-height: 25px;
+    border-radius: 4px;
+    color: red;
+    cursor: pointer
+}
+
+.AdministracionVentas-table-tbody ul li button:hover {
+    color: #fff
+}
+
+.AdministracionVentas-table-tbody ul:nth-child(2n) {
+    background: #fff
+}
+
+.AdministracionVentas-table-tbody ul:nth-child(odd) {
+    background: #fff;
+    border: 1px solid #D4CBCB;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.AdministracionVentas-table-tbody ul:nth-child(odd)>li:not(:first-child) {
+    cursor: default;
+}
+
+.AdministracionVentas-table-tbody-frase {
+    width: 12%;
+    min-width: 100px;
+    color: #0073aa
+}
+
+.AdministracionVentas-table-tbody_express img {
+    width: 30px;
+    border-radius: 20px
+}
+
+.AdministracionVentas-table-tbody_hidenInfo {
+    list-style: none;
+    background: #fff;
+    display: flex;
+    overflow: hidden;
+    height: 0;
+    transition: .2s
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections,
+.AdministracionVentas-table-tbody_hidenInfo-sections_1,
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 {
+    display: flex;
+    flex-direction: column;
+    margin-right: 35px;
+    width: 100%
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections span,
+.AdministracionVentas-table-tbody_hidenInfo-sections_1 span,
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span {
+    font-size: 14px;
+    line-height: 20px
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections-reload,
+.AdministracionVentas-table-tbody_hidenInfo-sections_1-reload,
+.AdministracionVentas-table-tbody_hidenInfo-sections_2-reload {
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-name: reload;
+    animation-duration: .4s
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span {
+    display: flex;
+    flex-direction: column
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span b {
+    margin-top: 5px
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span .proceso {
+    background: #3fd1ad
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span .envio {
+    background: #4777ad
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span .eliminar {
+    background: #b84e4e
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span button {
+    color: #fff;
+    border: none;
+    border-radius: 0;
+    line-height: 25px;
+    opacity: .8;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.AdministracionVentas-table-tbody_hidenInfo-sections_2 span button:hover {
+    color: #fff;
+    opacity: 1
+}
+
+.AdministracionVentas__pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.AdministracionVentas__pagination a {
+    padding: 0 3px
+}
+
+.AdministracionVentas__pagination a button {
+    padding: 5px 10px;
+    background: #000;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    font-size: 16px;
+    border-radius: 100px;
+}
+
+.AdministracionVentas__pagination a button:disabled {
+    background: red !important;
+    color: #fff;
+    cursor: not-allowed
+}
+
+.no_pagado {
+    background: #ffe4e4 !important
+}
+
+.expressOn {
+    background: #fff3b2 !important
+}
+
+.openpannel {
+    height: unset !important;
+    padding: 15px;
+    border: 1px solid #D4CBCB;
+    border-top: none;
+}
+
+.AdministracionVentas-table-tbody_payment span,
+.AdministracionVentas-table-tbody_express span {
+    display: inline-block;
+    text-align: center;
+    padding: 3px 12px;
+    color: #fff;
+    border-radius: 20px;
+}
+
+.AdministracionVentas-table-tbody_payment .notPaid {
+    background: #ff4d4d;
+}
+
+.AdministracionVentas-table-tbody_payment .paid {
+    background: #00b300;
+}
+
+.AdministracionVentas-table-tbody_express .express {
+    background: #6666ff;
+}
+
+.AdministracionVentas-table-tbody_express .normal {
+    background: #00cc99;
+}
+
+.deleteWrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.deleteWrapper button {
+    background: #FF4D4D;
+    border: 0;
+    color: #fff;
+    padding: 10px 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@keyframes reload {
+    from {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+#ExpressActivatorSwith+label,
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-emptyLi b {
+    font-size: 16px
+}
+
+#chocofrase input,
+.chocoletrasPlg__wrapperCode-dataUser-form textarea,
+.chocoletrasPlg__wrapperCode-dataUser-form_envioExpress-wrapper {
+    border: 1px solid #000 !important
+}
+
+#ExpressActivatorSwith+label,
+.chocoletrasPlg__wrapperCode-dataUser-form-input-disclamer,
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-firstHead-right-total span,
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-emptyLi b,
+label {
+    color: #000 !important
+}
+
+#TermAndCond {
+    margin-right: 0
+}
+
+.chocoletrasPlg__wrapperCode-dataUser-form-termCond {
+    align-items: center
+}
+
+#cancelProcessPaiment,
+.chocoletrasPlg__wrapperCode-dataUser-form-termCond a {
+    color: red
+}
+
+.chocoletrasPlg__wrapperCode-payment,
+.chocoletrasPlg__wrapperCode-payment p {
+    color: #000
+}
+
+.chocoletrasPlg__wrapperCode-payment-card {
+    margin-top: 15px
+}
+
+@media(max-width:600px) {
+    .chocoletrasPlg__wrapperCode-payment-buttons-left button {
+        margin-right: 15px
+    }
+
+    .chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst {
+        flex-flow: column
+    }
+
+    .chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable {
+        margin-top: 2px
+    }
+
+    .chocoletrasPlg__wrapperCode-dataUser-form input[type=date] {
+        min-height: 30px;
+        min-width: 300px
+    }
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable {
+    margin-right: 20px;
+    margin-top: 10px
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table {
+    border: none
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table td {
+    border: 1px solid #000 !important;
+    border-bottom: none !important
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tr:last-child td {
+    border-bottom: 1px solid #000 !important
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tr td:first-child {
+    border-right: none !important
+}
+
+.chocoletrasPlg__wrapperCode-firstHead-wrapper-ulWrapperFirst-liTable table tr td pre {
+    color: #000 !important;
+    font-size: 15px
+}
+
+.woocommerce-js input[type=number] {
+    max-width: 260px !important;
+    min-height: 36px !important
+}
+
+#nf-form-4-cont {
+    display: none !important
+}
+
+.chocoletrasPlg__wrapperCode-payment-buttons input[type="submit"] {
+    width: 100%;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    margin-bottom: 15px;
+    height: 50px;
+    border-radius: 5px;
+}
+
+.AdministracionVentas-table-tbody_hidenInfo>div {
+    width: 33.33%;
+}
+
+.AdministracionVentas-table-tbody_hidenInfo>div>span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-break: anywhere;
+}
+
+#calendarSettingsStyling select {
+    height: 150px;
+    width: 100%;
+    overflow: auto;
+}
+
+.copyrightPluginSet {
+    display: block;
+    width: 100%;
+    margin: 15px 0;
+    color: #000;
+}
