@@ -56,7 +56,7 @@ function chocoletras_shortCode()
 
                 <div class="col-md-5 col-12 text-center mb-2">
                     <div class="chocoletrasPlg-spiner">
-                        <img src="<?php echo plugins_url('../img/logospiner.gif', __FILE__); ?>"
+                        <img src="https://creatubrownie.com/wp-content/uploads/2023/10/cropped-brownie-personalizado-chocoleta.png"
                             alt="<?php echo _e('Chocoletras'); ?>">
                         <div class="chocoletrasPlg-spiner-ring"></div>
                     </div>
