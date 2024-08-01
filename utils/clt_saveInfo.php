@@ -93,31 +93,43 @@ function saveDataInDatabase($datos)
     );
 
     try {
+        // Execute the query and get the result
         $result = $wpdb->query($query);
 
+        // Check if the query executed successfully
         if ($result === false) {
             throw new Exception("Database error: " . $wpdb->last_error);
         }
+
+        // Retrieve the ID of the last inserted row
+        $inserted_id = $wpdb->insert_id;
+
+        // Check if the ID was set
+        if (empty($inserted_id)) {
+            throw new Exception("Failed to retrieve inserted ID.");
+        }
+
     } catch (Exception $error) {
         error_log($error->getMessage()); // Log the error message
         throw new Exception("Database error: " . $error->getMessage());
     }
 
-    $confirmSaveCookie;
-    $combinatedNameOption = $wpdb->insert_id . $sanitizeData['nonce'];
-    if ($result === 1) {
-        // Saving data to cookie
-        $cookieData = $sanitizeData['priceTotal'] . '_' . $sanitizeData['mainText'] . '_' . $sanitizeData['tel'] . '_' . $sanitizeData['uoi'];
-        if (get_option($combinatedNameOption . '-chocol_price')) {
-            $confirmSaveCookie = update_option($combinatedNameOption . '-chocol_price', $cookieData);
-        } else {
-            $confirmSaveCookie = add_option($combinatedNameOption . '-chocol_price', $cookieData);
-        }
-    }
+    // $confirmSaveCookie;
+    // $combinatedNameOption = $wpdb->insert_id . $sanitizeData['nonce'];
+    // if ($result === 1) {
+    //     // Saving data to cookie
+    //     $cookieData = $sanitizeData['priceTotal'] . '_' . $sanitizeData['mainText'] . '_' . $sanitizeData['tel'] . '_' . $sanitizeData['uoi'];
+    //     if (get_option($combinatedNameOption . '-chocol_price')) {
+    //         $confirmSaveCookie = update_option($combinatedNameOption . '-chocol_price', $cookieData);
+    //     } else {
+    //         $confirmSaveCookie = add_option($combinatedNameOption . '-chocol_price', $cookieData);
+    //     }
+    // }
 
     return $result === 1 ? array(
         "Status" => true,
-        "nonce" => $combinatedNameOption . '-chocol_price',
+        "inserted_id" => $inserted_id,
+        // "nonce" => $combinatedNameOption . '-chocol_price',
         "amount" => $sanitizeData['priceTotal'],
         "frase" => $sanitizeData['mainText'],
         "telef" => $sanitizeData['tel'],
@@ -127,6 +139,6 @@ function saveDataInDatabase($datos)
         "faddress" => $sanitizeData['address'],
         "fuoi" => $sanitizeData['uoi'],
         "fcoupon" => $sanitizeData['coupon'],
-        "cookie" => $confirmSaveCookie
+        // "cookie" => $confirmSaveCookie
     ) : array("Status" => 400);
 }

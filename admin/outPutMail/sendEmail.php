@@ -9,6 +9,7 @@
  * 
  * 
  */
+
 require_once plugin_dir_path(__FILE__) . '../emailModels/modelemail.php';
 
 use PHPMailer\PHPMailer2\Exception;
@@ -21,88 +22,67 @@ require_once plugin_dir_path(__FILE__) . '../PHPMailer-master/src/SMTP.php';
 
 function sendEmail($upcomingData)
 {
-  $mail = new PHPMailer();
-  $mail->IsSMTP();
-  $mail->SMTPDebug = 0;
-  $mail->Host = get_option("ouputCltHost"); //'smtp.ionos.es'; 
-  $mail->Port = get_option("ouputCltPort"); // 587; 
-  $mail->SMTPSecure = get_option("ouputCltSecure"); //'tls'; 
-  $mail->SMTPAuth = true;
-  $mail->Username = get_option("ouputCltemail"); //"ricardo@lavour.es"
-  $mail->Password = get_option("ouputCltPass"); // "Brembo3030"; 
-  $mail->SetFrom(get_option("ouputCltemail"), 'Chocoletra'); // $mail->SetFrom('ricardo@lavour.es', 'Chocoletras'); 
-  $result;
+    global $wpdb;
 
-  switch ($upcomingData['status']) {
-    case 'nuevo':
+    $mail = new PHPMailer();
+    $mail->IsSMTP();
+    $mail->SMTPDebug = 0; // Change to 2 for detailed debug info
+    $mail->Host = get_option("ouputCltHost");
+    $mail->Port = get_option("ouputCltPort");
+    $mail->SMTPSecure = get_option("ouputCltSecure");
+    $mail->SMTPAuth = true;
+    $mail->Username = get_option("ouputCltemail");
+    $mail->Password = get_option("ouputCltPass");
+    $mail->SetFrom(get_option("ouputCltemail"), 'Chocoletra');
 
-      $mail->AddAddress($upcomingData['email'], 'User');
-      $mail->Subject = 'Nuevo Pedido';
-      $mail->MsgHTML(modelemail('nuevo'));
-      $mail->AltBody = 'Your product is in production!';
-      if (!$mail->Send()) {
-        $result = "Error: " . $mail->ErrorInfo;
-      } else {
-        $result = 'sucessfull';
-      }
-      break;
+    // Prepare email content and subject based on the status
+    switch ($upcomingData['status']) {
+        case 'nuevo':
+            // Fetch data from the database based on the row ID
+            $tablename = $wpdb->prefix . 'chocoletras_plugin';
+            $query = $wpdb->prepare("SELECT * FROM $tablename WHERE id = %d", $upcomingData['rowID']);
+            $result = $wpdb->get_row($query);
 
-    case 'proceso':
+            if (!$result) {
+                return 'No data found for the given row ID.';
+            }
 
-      $mail->AddAddress($upcomingData['email'], 'User');
-      $mail->Subject = 'En proceso';
-      $mail->MsgHTML(modelemail('proceso'));
-      $mail->AltBody = 'Your product is in production!';
-      if (!$mail->Send()) {
-        $result = "Error: " . $mail->ErrorInfo;
-      } else {
-        $result = 'sucessfull';
-      }
-      break;
-    case 'envio':
+            $mail->AddAddress($result->email, 'User');
+            $mail->Subject = 'Nuevo Pedido';
+            $emailContent = modelemail('nuevo', $result);
+            $mail->AltBody = 'Your product is in production!';
+            break;
 
-      $mail->AddAddress($upcomingData['email'], 'User');
-      $mail->Subject = 'Chocoletra';
-      $mail->MsgHTML(modelemail('envio'));
-      $mail->AltBody = 'Your product was send!';
-      if (!$mail->Send()) {
-        $result = "Error: " . $mail->ErrorInfo;
-      } else {
-        $result = 'sucessfull';
-      }
-      break;
-    case 'eliminar':
+        case 'proceso':
+            $mail->AddAddress($upcomingData['email'], 'User');
+            $mail->Subject = 'En proceso';
+            $emailContent = modelemail('proceso'); // No database data needed
+            $mail->AltBody = 'Your product is in production!';
+            break;
 
-      $result = 'sucessfull';
+        case 'envio':
+            $mail->AddAddress($upcomingData['email'], 'User');
+            $mail->Subject = 'Chocoletra';
+            $emailContent = modelemail('envio'); // No database data needed
+            $mail->AltBody = 'Your product was sent!';
+            break;
 
-      break;
-  }
-  // return $result;
-}
+        case 'eliminar':
+            $mail->AddAddress($upcomingData['email'], 'User');
+            $mail->Subject = 'Order Removed';
+            $emailContent = 'Your order has been removed from the system.';
+            $mail->AltBody = 'Order removed notification.';
+            break;
 
-if (isset($_GET['payment']) && $_GET['payment'] == 'true') {
-  // Check if the cookie "chocoletraOrderData" is set
-  if (isset($_COOKIE['chocoletraOrderData'])) {
-    // Decode the JSON data from the cookie
-    $getOrderData = json_decode(stripslashes($_COOKIE['chocoletraOrderData']), true);
-
-    // Extract the user's email from the decoded data
-    if (isset($getOrderData['email'])) {
-      $upcomingData = [
-        'email' => $getOrderData['email'],
-        'status' => 'nuevo' // or 'envio' based on your logic
-      ];
-
-      // Send the email
-      $result = sendEmail($upcomingData);
-      echo $result;
-    } else {
-      echo "User email not found in the cookie.";
+        default:
+            return 'Invalid status provided.';
     }
-  } else {
-    echo "Order data cookie not found.";
-  }
+
+    $mail->MsgHTML($emailContent);
+
+    if (!$mail->Send()) {
+        return "Error: " . $mail->ErrorInfo;
+    } else {
+        return 'Successful';
+    }
 }
-//else {
-//   echo "Payment parameter not set or not true.";
-// }

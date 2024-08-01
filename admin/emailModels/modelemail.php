@@ -9,25 +9,21 @@
  * 
  */
 
-function modelemail($typeEmail)
+function modelemail($typeEmail, $data = null)
 {
     if ($typeEmail === 'nuevo') {
-        $output = typenuevo();
+        return typenuevo($data);
     } elseif ($typeEmail === 'proceso') {
-        $output = typeproceso();
+        return typeproceso(); // No data needed
+    } elseif ($typeEmail === 'envio') {
+        return typeEnviado(); // No data needed
     } else {
-        $output = typeEnviado();
+        return 'Invalid email type';
     }
-    return $output;
 }
 
-function typenuevo()
+function typenuevo($data)
 {
-    if (isset($_COOKIE['chocoletraOrderData'])) {
-        // Decode the JSON data from the cookie
-        $getOrderData = json_decode(stripslashes($_COOKIE['chocoletraOrderData']), true);
-    }
-
     $currentOrderDate = date('d F Y');
 
     $email = '
@@ -63,7 +59,7 @@ function typenuevo()
                     <p style="text-align: center; font-size: 16px;  margin-bottom: 40px;">
                         Hemos recibido su pedido y le informaremos sobre este pedido en futuras actualizaciones. Su
                         pedido es: <span
-                            style="text-decoration: underline; line-height: 16.8px;"><strong><em>' . $getOrderData['uoi'] . '</em></strong></span>
+                            style="text-decoration: underline; line-height: 16.8px;"><strong><em>' . $data->uoi . '</em></strong></span>
                     </p>
                 </td>
             </tr>
@@ -79,15 +75,15 @@ function typenuevo()
                 <td style="padding:10px 20px;">
                 <ul style="list-style: none; padding: 0; margin: 0;">
                 <li>
-                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Nombre:</strong> ' . $getOrderData['fname'] . '</p>
+                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Nombre:</strong> ' . $data->nombre . '</p>
                 </li>
                 <li>
-                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Email:</strong>' . $getOrderData['email'] . '</p>
+                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Email:</strong>' . $data->email . '</p>
                 </li>
                 <li>
-                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Telefono:</strong>' . $getOrderData['tel'] . '</p>
+                    <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Telefono:</strong>' . $data->telefono . '</p>
                 </li>';
-    $repareFrase = $getOrderData['mainText'];
+    $repareFrase = json_decode($data->frase, true);
     if (is_array($repareFrase)) {
         $fraseCount = count($repareFrase);
     } else {
@@ -105,7 +101,7 @@ function typenuevo()
 
     $email .= '<li>
                     <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Mensaje:</strong><br>
-                    ' . $getOrderData['message'] . '    
+                    ' . $data->message . '    
                     </p>
                 </li>
             </ul>
@@ -115,38 +111,38 @@ function typenuevo()
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Direccion:</strong>
-                            ' . $getOrderData['address'] . '
+                            ' . $data->direccion . '
                             </p>
                         </li>
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Ciudad:</strong>
-                            ' . $getOrderData['city'] . '
+                            ' . $data->ciudad . '
                             </p>
                         </li>
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Provincia:</strong>
-                                ' . $getOrderData['province'] . '
+                                ' . $data->province . '
                             </p>
                         </li>
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Codigo Postal:</strong>
-                                ' . $getOrderData['postal'] . '
+                                ' . $data->cp . '
                             </p>
                         </li>
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Fecha de
-                                    Entrega:</strong> ' . $getOrderData['picDate'] . '
+                                    Entrega:</strong> ' . $data->fechaEntrega . '
                             </p>
                         </li>
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Pagado:</strong> 
-                            ' . $getOrderData['payment'] . '
+                            ' . $data->payment . '
                             </p>
                         </li>';
-    if ($getOrderData['coupon']) {
+    if ($data->coupon) {
         $email .= '<li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;"><strong>Cupón:</strong>
-                            ' . $getOrderData['coupon'] . '
+                            ' . $data->coupon . '
                             </p>
                         </li>';
     }
@@ -175,7 +171,7 @@ function typenuevo()
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Envío Normal</p>
                         </li>';
-    if ($getOrderData['coupon']) {
+    if ($data->coupon) {
         $email .= '<li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Cupón</p>
                         </li>';
@@ -186,12 +182,12 @@ function typenuevo()
                 <td style="padding:10px 20px;">
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $getOrderData['priceTotal'] . '</p>
+                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $data->precio . '</p>
                         </li>
                         <li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€10</p>
+                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">' . get_option('precEnvio') . '</p>
                         </li>';
-    if ($getOrderData['coupon']) {
+    if ($data->coupon) {
         $email .= '<li>
                             <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">- €10</p>
                         </li> ';
@@ -211,7 +207,7 @@ function typenuevo()
                 </td>
 
                 <td style="padding:0px 20px;">
-                    <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $getOrderData['priceTotal'] . '</p>
+                    <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $data->precio . '</p>
                 </td>
             </tr>
             <tr>
@@ -257,6 +253,7 @@ function typenuevo()
 
     return $email;
 }
+
 
 function typeproceso()
 {

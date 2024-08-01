@@ -327,30 +327,7 @@
             $('.fraseInput').each(function () {
                 mainText.push($(this).val());
             });
-
-            const cookieData = {
-                mainText: mainText,
-                chocoType: chocoType,
-                priceTotal: priceTotal,
-                fname: fullName,
-                email: email,
-                tel: tel,
-                postal: postal,
-                city: city,
-                province: province,
-                address: address,
-                picDate: picDate,
-                shippingType: shippingType,
-                express: new Date().toISOString(),
-                message: message,
-                uoi: uoi,
-                coupon: coupon,
-                screenshots: screenshotPaths,
-                productBanner: typewriterScreenshotPath,
-            };
-
-            const cookieValue = encodeURIComponent(JSON.stringify(cookieData));
-
+            
             const dataToSend = {
                 action: 'test_action',
                 mainText: JSON.stringify(mainText),
@@ -379,16 +356,43 @@
                 url: ajax_variables.ajax_url,
                 data: dataToSend,
                 success: function (response) {
-                    // console.log("Response from server: ", response);
-                    // const parsedResponse = JSON.parse(response);
+                    console.log("Response from server: ", response);
+                    const parsedResponse = JSON.parse(response);
 
-                    // if (parsedResponse.Datos.Status) {
-                    //     console.info("Process succeeded: ", parsedResponse.Datos);
-                    // } else {
-                    //     console.error("Process failed: ", parsedResponse.Datos);
-                    // }
-                    setCookie('chocol_cookie', true);
-                    setCookie('chocoletraOrderData', cookieValue);
+                    if (parsedResponse.Datos.Status) {
+                        console.info("Process succeeded: ", parsedResponse.Datos);
+                        console.log("Inserted ID: ", parsedResponse.Datos.inserted_id);
+
+                        const cookieData = {
+                            inserted_id: parsedResponse.Datos.inserted_id,
+                            mainText: mainText,
+                            chocoType: chocoType,
+                            priceTotal: priceTotal,
+                            fname: fullName,
+                            email: email,
+                            tel: tel,
+                            postal: postal,
+                            city: city,
+                            province: province,
+                            address: address,
+                            picDate: picDate,
+                            shippingType: shippingType,
+                            express: new Date().toISOString(),
+                            message: message,
+                            uoi: uoi,
+                            coupon: coupon,
+                            screenshots: screenshotPaths,
+                            productBanner: typewriterScreenshotPath,
+                        };
+
+                        const cookieValue = encodeURIComponent(JSON.stringify(cookieData));
+
+                        setCookie('chocol_cookie', true);
+                        setCookie('chocoletraOrderData', cookieValue);
+
+                    } else {
+                        console.error("Process failed: ", parsedResponse.Datos);
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX request failed: ", status, error);
