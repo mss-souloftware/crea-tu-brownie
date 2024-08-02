@@ -29,9 +29,30 @@ require_once plugin_dir_path(__FILE__) . './savestripeoption/stripeoption.php';
 require_once plugin_dir_path(__FILE__) . './savestripeoption/stripeSession.php';
 require_once plugin_dir_path(__FILE__) . './report/saveReportToDatabase.php';
 require_once plugin_dir_path(__FILE__) . './report/deletteReport.php';
+
+require_once (plugin_dir_path(__FILE__) . '/abandoned/abandoned-cart-functions.php');
 // add styles to backend
 
+add_filter('cron_schedules', 'add_custom_cron_intervals');
 
+function add_custom_cron_intervals($schedules)
+{
+  $schedules['minute'] = array(
+    'interval' => 60,
+    'display' => __('Every Minute')
+  );
+  return $schedules;
+}
+
+// Schedule event on init hook
+add_action('init', 'schedule_abandoned_cart_check');
+
+function schedule_abandoned_cart_check()
+{
+  if (!wp_next_scheduled('check_abandoned_cart')) {
+    wp_schedule_event(time(), 'minute', 'check_abandoned_cart');
+  }
+}
 function clt_admin_style()
 {
   wp_enqueue_style('faltpickrForPluginBackend', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css', array(), false);
