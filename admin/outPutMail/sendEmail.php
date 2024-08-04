@@ -37,6 +37,22 @@ function sendEmail($upcomingData)
 
     // Prepare email content and subject based on the status
     switch ($upcomingData['status']) {
+        case 'abandoned':
+            // Fetch data from the database based on the row ID
+            $tablename = $wpdb->prefix . 'chocoletras_plugin';
+            $query = $wpdb->prepare("SELECT * FROM $tablename WHERE id = %d", $upcomingData['rowID']);
+            $result = $wpdb->get_row($query);
+
+            if (!$result) {
+                return 'No data found for the given row ID.';
+            }
+
+            $mail->AddAddress($result->email, 'User');
+            $mail->Subject = 'Continuar Compra!';
+            $emailContent = modelemail('abandoned', $result);
+            $mail->AltBody = 'Your product is in production!';
+            break;
+
         case 'nuevo':
             // Fetch data from the database based on the row ID
             $tablename = $wpdb->prefix . 'chocoletras_plugin';

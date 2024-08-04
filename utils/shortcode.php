@@ -26,6 +26,70 @@ if (isset($_COOKIE['chocol_cookie'])) {
 
 function chocoletras_shortCode()
 {
+
+    if (isset($_GET['abandoned'])) {
+        ?>
+        <script>
+            document.cookie = `chocol_cookie=; Secure; Max-Age=-35120; path=/`;
+            document.cookie = `chocoletraOrderData=; Secure; Max-Age=-35120; path=/`;
+            document.cookie = `paypamentType=; Secure; Max-Age=-35120; path=/`;
+        </script>
+        <?php
+        global $wpdb;
+        $tablename = $wpdb->prefix . 'chocoletras_plugin';
+    
+        $abandonedProd = $_GET['abandoned'];
+    
+        $query = $wpdb->prepare("SELECT * FROM $tablename WHERE id = %s", $abandonedProd);
+        $result = $wpdb->get_row($query, ARRAY_A);
+    
+        if ($result) {
+            // Check if the order is already paid
+            if ($result['pagoRealizado'] == 1) {
+                // If the order is paid, show an alert and redirect
+                echo '<script>
+                        alert("Este pedido ya ha sido pagado. ¡Por favor ordene una nueva frase!");
+                        window.location.href = "' . get_option('ctf_settings')['plugin_page'] . '";
+                      </script>';
+                return;
+            }
+    
+            // Map the data if necessary
+            $data = [
+                'inserted_id' => $result['id'],
+                'mainText' => json_decode($result['frase']), // Adjust according to your data structure
+                'chocoType' => $result['chocotype'],
+                'priceTotal' => $result['precio'],
+                'fname' => $result['nombre'],
+                'email' => $result['email'],
+                'tel' => $result['telefono'],
+                'postal' => $result['cp'],
+                'city' => $result['ciudad'],
+                'province' => $result['province'],
+                'address' => $result['direccion'],
+                'picDate' => $result['fechaEntrega'],
+                'shippingType' => $result['enviado'],
+                'express' => $result['express'],
+                'message' => $result['message'],
+                'uoi' => $result['uoi'],
+                'coupon' => $result['coupon'],
+                'screenshots' => json_decode($result['screens']),
+                'productBanner' => $result['banner'],
+            ];
+    
+            $jsonResult = json_encode($data, JSON_UNESCAPED_UNICODE);
+            ?>
+            <script>
+                document.cookie = `chocol_cookie=true; Secure; path=/; Max-Age=3600`;
+                document.cookie = `chocoletraOrderData=${encodeURIComponent('<?php echo $jsonResult; ?>')}; Secure; path=/; Max-Age=3600`;
+            </script>
+            <?php
+        } else {
+            echo 'No order found with the given ID.';
+            $result = [];
+        }
+    }    
+
     ob_start();
     ?>
 
@@ -80,19 +144,19 @@ function chocoletras_shortCode()
                             <!-- progressbar -->
                             <ul id="progressbar">
                                 <li <?php
-                                if (isset($_COOKIE['chocol_cookie'])) {
+                                if (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                     echo ' class="active"';
                                 }
                                 ?> id="account">
                                     <strong>Frase</strong></li>
                                 <li <?php
-                                if (isset($_COOKIE['chocol_cookie'])) {
+                                if (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                     echo ' class="active"';
                                 }
                                 ?>
                                     id="personal"><strong>Envío</strong></li>
                                 <li <?php
-                                if (isset($_COOKIE['chocol_cookie'])) {
+                                if (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                     echo ' class="active"';
                                 }
                                 ?> id="payment">
@@ -104,7 +168,7 @@ function chocoletras_shortCode()
                                 ?> id="confirm"><strong>Finalizar</strong></li>
                             </ul>
                             <fieldset <?php
-                            if (isset($_COOKIE['chocol_cookie'])) {
+                            if (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                 echo ' style="display: none; opacity: 0;"';
                             }
                             ?>>
@@ -150,7 +214,7 @@ function chocoletras_shortCode()
                                     class="next action-button" disabled>Continuar</button>
                             </fieldset>
                             <fieldset <?php
-                            if (isset($_COOKIE['chocol_cookie'])) {
+                            if (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                 echo ' style="display: none; opacity: 0;"';
                             }
                             ?>>
@@ -279,7 +343,7 @@ function chocoletras_shortCode()
 
                             if (isset($_GET['payment']) && $_GET['payment'] == true) {
                                 echo ' style="display: none; opacity: 0;"';
-                            } elseif (isset($_COOKIE['chocol_cookie'])) {
+                            } elseif (isset($_COOKIE['chocol_cookie']) || $_GET['abandoned']) {
                                 echo ' style="display: block; opacity: 1;"';
                             } else {
                                 echo '';
@@ -299,27 +363,32 @@ function chocoletras_shortCode()
                                         </div>
                                         <div class="col-5">
                                             <h2 class="steps">
-                                                <b class="priceCounter"><?php echo $getOrderData['priceTotal']; ?></b>
+                                                <b class="priceCounter"><?php
+                                                if (!empty($result)) {
+                                                    echo $result['precio'];
+                                                } else{
+                                                     echo $getOrderData['priceTotal'];
+                                                 } ?></b>
                                                 €
                                             </h2>
                                         </div>
                                     </div>
+                                <?php if (!empty($result)) {    
+                                    $fraseArray = json_decode($result['frase'], true);
+                                    ?>
                                     <div class="ordersPanel">
-
                                         <?php
                                         $scCounter = 0;
-                                        foreach ($getOrderData['mainText'] as $frase) {
-                                            $screenshotUrl = isset($getOrderData['screenshots'][$scCounter]) ? $getOrderData['screenshots'][$scCounter] : '';
+                                        foreach ($fraseArray as $frase) {
+                                            if (!empty($result)) {  
+                                                $screenshotUrl = json_decode($result['screens'], true);
+                                                echo $screenshotUrl;
+                                            } else {
+                                                $screenshotUrl = isset($getOrderData['screenshots'][$scCounter]) ? $getOrderData['screenshots'][$scCounter] : '';
+                                            }
                                             ?>
 
                                             <div class="orderDetails">
-                                                <?php /*    
-                                                                              <div class="closeBtn" id="cancelProcessPaiment">
-                                                                                  <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                                      <path fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM8.96963 8.96965C9.26252 8.67676 9.73739 8.67676 10.0303 8.96965L12 10.9393L13.9696 8.96967C14.2625 8.67678 14.7374 8.67678 15.0303 8.96967C15.3232 9.26256 15.3232 9.73744 15.0303 10.0303L13.0606 12L15.0303 13.9696C15.3232 14.2625 15.3232 14.7374 15.0303 15.0303C14.7374 15.3232 14.2625 15.3232 13.9696 15.0303L12 13.0607L10.0303 15.0303C9.73742 15.3232 9.26254 15.3232 8.96965 15.0303C8.67676 14.7374 8.67676 14.2625 8.96965 13.9697L10.9393 12L8.96963 10.0303C8.67673 9.73742 8.67673 9.26254 8.96963 8.96965Z" fill="#E64C3C" />
-                                                                                  </svg>
-                                                                              </div>
-                                                                              */ ?>
                                                 <div class="orderThumb">
                                                     <img src="<?php echo get_site_url() . $screenshotUrl; ?>" alt="">
                                                 </div>
@@ -335,8 +404,11 @@ function chocoletras_shortCode()
                                                                     stroke-linejoin="round" />
                                                             </svg>
                                                             <?php
+                                                             if (!empty($result)) {
+                                                                echo $result['fechaEntrega'];
+                                                            } else{
                                                             $date = substr($getOrderData['picDate'], 0, 10);
-                                                            echo $date; ?>
+                                                            echo $date; }?>
                                                         </div>
                                                         <div class="deliveryDate">
                                                             <?php if ($getOrderData['shippingType'] === 'on') { ?>
@@ -362,7 +434,62 @@ function chocoletras_shortCode()
                                             <?php $scCounter++;
                                         } ?>
                                     </div>
+                                    <?php } else {?>
+                                    <div class="ordersPanel">
 
+                                        <?php
+                                        $scCounter = 0;
+                                        foreach ($getOrderData['mainText'] as $frase) {
+                                            $screenshotUrl = isset($getOrderData['screenshots'][$scCounter]) ? $getOrderData['screenshots'][$scCounter] : '';
+                                            ?>
+
+                                            <div class="orderDetails">
+                                                <div class="orderThumb">
+                                                    <img src="<?php echo get_site_url() . $screenshotUrl; ?>" alt="">
+                                                </div>
+                                                <div class="orderData">
+                                                    <p>Frase: <?php echo $frase; ?></p>
+                                                    <div class="pinsPanel">
+                                                        <div class="deliveryDate">
+                                                            <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="M5.06152 12C5.55362 8.05369 8.92001 5 12.9996 5C17.4179 5 20.9996 8.58172 20.9996 13C20.9996 17.4183 17.4179 21 12.9996 21H8M13 13V9M11 3H15M3 15H8M5 18H10"
+                                                                    stroke="#fff" stroke-width="2" stroke-linecap="round"
+                                                                    stroke-linejoin="round" />
+                                                            </svg>
+                                                            <?php
+                                                             if (!empty($result)) {
+                                                                echo $result['fechaEntrega'];
+                                                            } else{
+                                                            $date = substr($getOrderData['picDate'], 0, 10);
+                                                            echo $date; }?>
+                                                        </div>
+                                                        <div class="deliveryDate">
+                                                            <?php if ($getOrderData['shippingType'] === 'on') { ?>
+                                                                <svg fill="#fff" width="16px" height="16px" viewBox="0 0 32 32"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M 0 6 L 0 8 L 19 8 L 19 23 L 12.84375 23 C 12.398438 21.28125 10.851563 20 9 20 C 7.148438 20 5.601563 21.28125 5.15625 23 L 4 23 L 4 18 L 2 18 L 2 25 L 5.15625 25 C 5.601563 26.71875 7.148438 28 9 28 C 10.851563 28 12.398438 26.71875 12.84375 25 L 21.15625 25 C 21.601563 26.71875 23.148438 28 25 28 C 26.851563 28 28.398438 26.71875 28.84375 25 L 32 25 L 32 16.84375 L 31.9375 16.6875 L 29.9375 10.6875 L 29.71875 10 L 21 10 L 21 6 Z M 1 10 L 1 12 L 10 12 L 10 10 Z M 21 12 L 28.28125 12 L 30 17.125 L 30 23 L 28.84375 23 C 28.398438 21.28125 26.851563 20 25 20 C 23.148438 20 21.601563 21.28125 21.15625 23 L 21 23 Z M 2 14 L 2 16 L 8 16 L 8 14 Z M 9 22 C 10.117188 22 11 22.882813 11 24 C 11 25.117188 10.117188 26 9 26 C 7.882813 26 7 25.117188 7 24 C 7 22.882813 7.882813 22 9 22 Z M 25 22 C 26.117188 22 27 22.882813 27 24 C 27 25.117188 26.117188 26 25 26 C 23.882813 26 23 25.117188 23 24 C 23 22.882813 23.882813 22 25 22 Z" />
+                                                                </svg>
+                                                                Envío Express
+                                                            <?php } else { ?>
+                                                                <svg fill="#fff" width="16px" height="16px" viewBox="0 0 32 32"
+                                                                    version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M16.722 21.863c-0.456-0.432-0.988-0.764-1.569-0.971l-1.218-4.743 14.506-4.058 1.554 6.056-13.273 3.716zM12.104 9.019l9.671-2.705 1.555 6.058-9.67 2.705-1.556-6.058zM12.538 20.801c-0.27 0.076-0.521 0.184-0.765 0.303l-4.264-16.615h-1.604c-0.161 0.351-0.498 0.598-0.896 0.598h-2.002c-0.553 0-1.001-0.469-1.001-1.046s0.448-1.045 1.001-1.045h2.002c0.336 0 0.618 0.184 0.8 0.447h3.080v0.051l0.046-0.014 4.41 17.183c-0.269 0.025-0.538 0.064-0.807 0.138zM12.797 21.811c1.869-0.523 3.79 0.635 4.291 2.588 0.501 1.951-0.608 3.957-2.478 4.48-1.869 0.521-3.79-0.637-4.291-2.588s0.609-3.957 2.478-4.48zM12.27 25.814c0.214 0.836 1.038 1.332 1.839 1.107s1.276-1.084 1.062-1.92c-0.214-0.836-1.038-1.332-1.839-1.109-0.802 0.225-1.277 1.085-1.062 1.922zM29.87 21.701l-11.684 3.268c-0.021-0.279-0.060-0.561-0.132-0.842-0.071-0.281-0.174-0.545-0.289-0.799l11.623-3.25 0.482 1.623z">
+                                                                    </path>
+                                                                </svg>
+                                                                Envío Normal
+                                                            <?php } ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php $scCounter++;
+                                        } ?>
+                                    </div>
+                                <?php } ?>
                                     <div class="lineBreaker">
                                         <span>Aceptamos Pagos</span>
                                     </div>

@@ -18,6 +18,7 @@ require_once plugin_dir_path(__FILE__) . '../admin/opciones/submenu.php';
 require_once plugin_dir_path(__FILE__) . '../admin/calander/calander.php';
 require_once plugin_dir_path(__FILE__) . '../admin/coupons/coupons.php';
 require_once plugin_dir_path(__FILE__) . '../admin/payments/payments.php';
+require_once plugin_dir_path(__FILE__) . '../admin/abandoned/abandoned.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/itemsEmail.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/reportsPage.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/stripe.php';
@@ -31,7 +32,6 @@ require_once plugin_dir_path(__FILE__) . './report/saveReportToDatabase.php';
 require_once plugin_dir_path(__FILE__) . './report/deletteReport.php';
 
 require_once (plugin_dir_path(__FILE__) . '/abandoned/abandoned-cart-functions.php');
-// add styles to backend
 
 add_filter('cron_schedules', 'add_custom_cron_intervals');
 
@@ -148,46 +148,6 @@ function chocoletrasInsertScripts()
   );
 }
 add_action('wp_enqueue_scripts', 'chocoletrasInsertScripts');
-
-// Handle the Redsys notification
-add_action('wp_ajax_redsys_notification', 'handle_redsys_notification');
-add_action('wp_ajax_nopriv_redsys_notification', 'handle_redsys_notification');
-
-function handle_redsys_notification()
-{
-  // Include the Redsys API
-  include_once 'redsyspur/apiRedsys/apiRedsys.php';
-
-  // Create a new instance of the RedsysAPI
-  $miObj = new RedsysAPI;
-
-  // Capture the parameters from the notification
-  $version = $_POST["Ds_SignatureVersion"];
-  $params = $_POST["Ds_MerchantParameters"];
-  $signatureRecibida = $_POST["Ds_Signature"];
-
-  // Decode the merchant parameters
-  $decodec = $miObj->decodeMerchantParameters($params);
-
-  // Get the response code
-  $codigoRespuesta = $miObj->getParameter("Ds_Response");
-
-  // Validate the signature
-  $claveModuloAdmin = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
-  $signatureCalculada = $miObj->createMerchantSignatureNotif($claveModuloAdmin, $params);
-
-  // Log the result for debugging
-  file_put_contents('notification_log.txt', print_r($_POST, true), FILE_APPEND);
-
-  if ($signatureCalculada === $signatureRecibida) {
-    echo "FIRMA OK. Realizar tareas en el servidor";
-  } else {
-    echo "FIRMA KO. Error, firma inválida";
-  }
-
-  // Always end with wp_die() to prevent WordPress from appending a 0
-  wp_die();
-}
 
 // Register AJAX actions
 function register_coupon_ajax()
@@ -396,6 +356,21 @@ function addSubmenuEmailOptions()
     'install_plugins',
     'payment_settings',
     'paymentOutput',
+    6
+  );
+}
+
+
+add_action('admin_menu', 'addSubmenuAbandoned');
+function addSubmenuAbandoned()
+{
+  add_submenu_page(
+    'clt_amin',
+    'Carro Abandonado',
+    'Carro Abandonado',
+    'install_plugins',
+    'abandoned_cart',
+    'abandonedOutput',
     6
   );
 }

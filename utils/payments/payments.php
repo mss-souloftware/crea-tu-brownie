@@ -81,6 +81,16 @@ if (isset($_GET['payment']) && $_GET['payment'] == true) {
 <?php }
 function paymentFrontend()
 {
+    if (isset($_GET['abandoned'])) {
+        global $wpdb;
+        $tablename = $wpdb->prefix . 'chocoletras_plugin';
+
+        $abandonedProd = $_GET['abandoned'];
+
+        $query = $wpdb->prepare("SELECT * FROM $tablename WHERE id = %s", $abandonedProd);
+        $result = $wpdb->get_row($query, ARRAY_A);
+    }
+
     if (isset($_COOKIE['chocoletraOrderData'])) {
         $getOrderData = json_decode(stripslashes($_COOKIE['chocoletraOrderData']), true);
     }
@@ -233,8 +243,13 @@ function paymentFrontend()
         require_once ($redsysAPIwoo);
 
         $miObj = new RedsysAPI;
-
-        $amount = $getOrderData['priceTotal'];
+        if (!empty($result)) {
+            $amount = $result['precio'];
+            $insertedID = $result['id'];
+        } else {
+            $amount = $getOrderData['priceTotal'];
+            $insertedID = $getOrderData['inserted_id'];
+        }
         echo 'checkingamount' . $amount;
         $amount = $amount ? str_replace('.', '', $amount) : 'null';
         $amount = $amount ? explode('_', $amount)[0] : 'null';
@@ -255,7 +270,7 @@ function paymentFrontend()
         $miObj->setParameter("DS_MERCHANT_CURRENCY", "978");
         $miObj->setParameter("DS_MERCHANT_TRANSACTIONTYPE", "0");
         $miObj->setParameter("DS_MERCHANT_TERMINAL", "001");
-        $miObj->setParameter("DS_MERCHANT_MERCHANTDATA", $getOrderData['inserted_id']);
+        $miObj->setParameter("DS_MERCHANT_MERCHANTDATA", $insertedID);
         $miObj->setParameter("DS_MERCHANT_MERCHANTURL", $plugin_page);
         $miObj->setParameter("DS_MERCHANT_URLOK", "$plugin_payment?payment=true");
         $miObj->setParameter("DS_MERCHANT_URLKO", $thank_you_page);
@@ -289,7 +304,7 @@ function paymentFrontend()
         $bizumObj->setParameter("DS_MERCHANT_TRANSACTIONTYPE", "7");
         $bizumObj->setParameter("DS_MERCHANT_TERMINAL", "001");
         $bizumObj->setParameter("DS_MERCHANT_PAYMETHODS", "z");
-        $bizumObj->setParameter("DS_MERCHANT_MERCHANTDATA", $getOrderData['inserted_id']);
+        $bizumObj->setParameter("DS_MERCHANT_MERCHANTDATA", $insertedID);
         $bizumObj->setParameter("DS_MERCHANT_MERCHANTURL", $plugin_page);
         $bizumObj->setParameter("DS_MERCHANT_URLOK", "$plugin_payment?payment=true");
         $bizumObj->setParameter("DS_MERCHANT_URLKO", $thank_you_page);
@@ -326,7 +341,7 @@ function paymentFrontend()
         $goggleObj->setParameter("DS_MERCHANT_TRANSACTIONTYPE", "7");
         $goggleObj->setParameter("DS_MERCHANT_TERMINAL", "001");
         $goggleObj->setParameter("DS_MERCHANT_PAYMETHODS", "xpay");
-        $goggleObj->setParameter("DS_MERCHANT_MERCHANTDATA", $getOrderData['inserted_id']);
+        $goggleObj->setParameter("DS_MERCHANT_MERCHANTDATA", $insertedID);
         $goggleObj->setParameter("DS_MERCHANT_MERCHANTURL", $plugin_page);
         $goggleObj->setParameter("DS_MERCHANT_URLOK", "$plugin_payment?payment=true");
         $goggleObj->setParameter("DS_MERCHANT_URLKO", $thank_you_page);
@@ -349,7 +364,8 @@ function paymentFrontend()
     </div>
 
     <div style="display:none;" class="chocoletrasPlg__wrapperCode-payment-buttons-left">
-        <form id="payPayPal" action="https://www.sandbox.paypal.com/cgi-bin/webscr<?php // echo PAYPAL_URL; ?>" method="post">
+        <form id="payPayPal" action="https://www.sandbox.paypal.com/cgi-bin/webscr<?php // echo PAYPAL_URL; ?>"
+            method="post">
             <!-- PayPal business email to collect payments -->
             <input type='hidden' name='business' value="<?php echo PAYPAL_EMAIL; ?>">
 
