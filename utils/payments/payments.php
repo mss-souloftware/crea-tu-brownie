@@ -105,32 +105,40 @@ function paymentFrontend()
         $plugin_payment = get_option('ctf_settings')['plugin_payment'];
         $thank_you_page = get_option('ctf_settings')['thank_you_page'];
 
+        function log_ipn($message)
+        {
+            $file = fopen('ipn_log.txt', 'a');
+            fwrite($file, date('[Y-m-d H:i e] ') . $message . PHP_EOL);
+            fclose($file);
+        }
+
+        log_ipn("IPN script started");
+
         // PayPal Configuration
-        // define('PAYPAL_EMAIL', 'chocoletra2020@gmail.com');
         define('PAYPAL_EMAIL', 'sb-hjjsi25330300@business.example.com');
         define('RETURN_URL', "$plugin_page?payment=true");
         define('CANCEL_URL', $plugin_payment);
-        define('NOTIFY_URL', "$thank_you_page?payment=true");
+        define('NOTIFY_URL', "$thank_you_page");
         define('PAYPAL_CURRENCY', 'EUR');
-        define('SANDBOX', TRUE); // TRUE or FALSE
-        define('LOCAL_CERTIFICATE', FALSE); // TRUE or FALSE
-    
-        if (SANDBOX === TRUE) {
-            $paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
-        } else {
-            $paypal_url = "https://www.paypal.com/cgi-bin/webscr";
-        }
+        define('SANDBOX', TRUE);
+        define('LOCAL_CERTIFICATE', FALSE);
+
+        $paypal_url = SANDBOX ? "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr" : "https://ipnpb.paypal.com/cgi-bin/webscr";
         define('PAYPAL_URL', $paypal_url);
 
-        // Handle IPN
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['txn_id'])) {
-            // Database connection
+            log_ipn("Received POST request with txn_id: " . $_POST['txn_id']);
+
             global $wpdb;
 
-            // Read POST data
+            // Log all POST data
+            foreach ($_POST as $key => $value) {
+                log_ipn("Array data: $key => $value");
+            }
+
             $raw_post_data = file_get_contents('php://input');
             $raw_post_array = explode('&', $raw_post_data);
-            $myPost = array();
+            $myPost = [];
             foreach ($raw_post_array as $keyval) {
                 $keyval = explode('=', $keyval);
                 if (count($keyval) == 2) {
@@ -138,15 +146,13 @@ function paymentFrontend()
                 }
             }
 
-            // Read the IPN message sent from PayPal and prepend 'cmd=_notify-validate'
             $req = 'cmd=_notify-validate';
             foreach ($myPost as $key => $value) {
                 $value = urlencode($value);
                 $req .= "&$key=$value";
             }
 
-            // Post IPN data back to PayPal to validate the IPN data is genuine
-            $ch = curl_init(PAYPAL_URL);
+            $ch = curl_init('https://ipnpb.sandbox.paypal.com/cgi-bin/webscr');
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -154,55 +160,77 @@ function paymentFrontend()
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Connection: Close']);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 10); // Max number of redirects to follow
+    
+            // cURL debug information
+            curl_setopt($ch, CURLOPT_VERBOSE, true);
+            $verbose = fopen('curl_debug.txt', 'w+');
+            curl_setopt($ch, CURLOPT_STDERR, $verbose);
 
             $res = curl_exec($ch);
+            if ($res === FALSE) {
+                log_ipn("cURL error: " . curl_error($ch));
+            } else {
+                log_ipn("cURL response: " . $res);
+            }
+            fclose($verbose);
             curl_close($ch);
 
-            // Inspect IPN validation result and act accordingly
+
             if (strcmp($res, "VERIFIED") == 0) {
-                // Payment data variables
+
                 $payment_status = $_POST['payment_status'];
                 $txn_id = $_POST['txn_id'];
                 $payer_email = $_POST['payer_email'];
-                $item_number = $_POST['item_number']; // Assuming item_number contains your custom order ID
-    
+                $item_number = $_POST['item_number'];
+                $paidPrice = $_POST['mc_gross'];
+
+
                 if ($payment_status == "Completed") {
-                    // Database update logic
                     $tablename = $wpdb->prefix . 'chocoletras_plugin';
                     $query = $wpdb->prepare("SELECT * FROM $tablename WHERE id = %s", $item_number);
                     $result = $wpdb->get_row($query);
 
                     if ($result) {
-                        // Assume paymentType is derived from PayPal data
-                        $paymentType = 'PayPal'; // or other logic to determine payment type
-                        $paymentDescription = ($paymentType == "0") ? "Redsys" : (($paymentType == "7") ? "Bizum" : $paymentType);
+                        $paymentType = 'PayPal';
+                        $paymentDescription = $paymentType;
 
                         $update_query = $wpdb->prepare(
-                            "UPDATE $tablename SET uoi = %s, pagoRealizado = 1, payment = %s WHERE id = %s",
+                            "UPDATE $tablename SET uoi = %s, pagoRealizado = 1, payment = %s, precio = %f WHERE id = %s",
                             $txn_id,
                             $paymentDescription,
+                            $paidPrice,
                             $item_number
                         );
-                        $wpdb->query($update_query);
 
-                        // Prepare email data
+                        $wpdb->query($update_query);
+                        log_ipn("Database updated for order ID: " . $item_number);
+
                         $upcomingData = [
                             'email' => $result->email,
-                            'status' => 'nuevo', // or 'envio' based on your logic
+                            'status' => 'nuevo',
                             'rowID' => $result->id
                         ];
 
-                        // Send the email
                         $emailResult = sendEmail($upcomingData);
-                        error_log($emailResult);
+                        log_ipn("Email result: " . $emailResult);
+                    } else {
+                        log_ipn("Order ID not found: " . $item_number);
                     }
+                } else {
+                    log_ipn("Payment status not completed: " . $payment_status);
                 }
             } else if (strcmp($res, "INVALID") == 0) {
-                error_log("Invalid IPN: $req");
+                log_ipn("IPN INVALID: " . $req);
             }
             exit;
         }
+        log_ipn("No POST data or txn_id not set");
+
+
 
         function generateRandomOrderNumberRedsys(int $lengthRedsys = 10): string
         {
@@ -266,10 +294,10 @@ function paymentFrontend()
             $amount = $getOrderData['priceTotal'];
             $insertedID = $getOrderData['inserted_id'];
         }
-        echo 'checkingamount' . $amount;
+        // echo 'checkingamount' . $amount;
         $amount = $amount ? str_replace('.', '', $amount) : 'null';
         $amount = $amount ? explode('_', $amount)[0] : 'null';
-        
+
         // Check the length of the amount
         if (strlen($amount) == 3) {
             // Add "0" at the end
@@ -278,7 +306,7 @@ function paymentFrontend()
             // Add "00" at the end
             $amount = $amount . "00";
         }
-        
+
         echo 'final ammount' . $amount;
 
         $miObj->setParameter("DS_MERCHANT_AMOUNT", $amount);
@@ -380,15 +408,24 @@ function paymentFrontend()
 
     </div>
 
+    <?php
+    if (!empty($result)) {
+        $payPalamount = $priceTotal;
+    } else {
+        $payPalamount = $getOrderData['priceTotal'];
+    }
+    ?>
+
     <div style="display:none;" class="chocoletrasPlg__wrapperCode-payment-buttons-left">
-        <form id="payPayPal" action="https://www.sandbox.paypal.com/cgi-bin/webscr<?php // echo PAYPAL_URL; ?>"
+        <form id="payPayPal" action="https://ipnpb.sandbox.paypal.com/cgi-bin/webscr<?php // echo PAYPAL_URL; ?>"
             method="post">
             <!-- PayPal business email to collect payments -->
             <input type='hidden' name='business' value="<?php echo PAYPAL_EMAIL; ?>">
 
             <input type="hidden" name="item_name" value="<?php echo $getOrderData['fname']; ?>">
-            <input type="hidden" name="item_number" value="<?php echo $getOrderData['uoi']; ?>">
-            <input type="hidden" name="amount" value="<?php echo $getOrderData['priceTotal']; ?>">
+            <input type="hidden" name="item_number" value="<?php echo $getOrderData['inserted_id']; ?>">
+            <input type="hidden" name="amount" value="<?php echo $payPalamount; ?>">
+
             <input type="hidden" name="currency_code" value="<?php echo PAYPAL_CURRENCY; ?>">
             <input type='hidden' name='no_shipping' value='1'>
             <input type="hidden" name="lc" value="" />

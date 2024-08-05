@@ -413,7 +413,7 @@ function chocoletras_shortCode()
                                         </div>
                                         <div class="col-5">
                                             <h2 class="steps">
-                                            <?php if (!empty($result)) {
+                                            <?php if (!empty($result) && $_GET['coupon']) {
                                                 echo '<del style="color:red; font-size:18px;"> '. $result['precio'] .'</del>';
                                              } ?>
                                                 <b class="priceCounter"><?php
