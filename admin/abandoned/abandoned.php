@@ -15,6 +15,9 @@ function abandonedOutput()
         update_option('abandoned_cart_coupon', sanitize_text_field($_POST['coupon']));
         update_option('abandoned_cart_enable', isset($_POST['enable_abandoned_cart']) ? 1 : 0);
         update_option('abandoned_cart_minutes', intval($_POST['cart_minutes']));
+
+        // Re-schedule the cron job
+        schedule_abandoned_cart_check();
     }
 
     // Retrieve current settings

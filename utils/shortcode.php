@@ -23,9 +23,36 @@ if (isset($_COOKIE['chocol_cookie'])) {
     $lastCookieVal = null;
 }
 
+function getCouponDiscount($couponName)
+{
+    $coupons = get_option('coupons', []);
+    foreach ($coupons as $coupon) {
+        if ($coupon['name'] === $couponName) {
+            return $coupon;
+        }
+    }
+    return false;
+}
+
+// Function to apply coupon discount
+function applyCouponDiscount($price, $type, $value)
+{
+    $price = floatval($price);
+    if ($type === 'percentage') {
+        $discountedPrice = $price - ($price * ($value / 100));
+    } elseif ($type === 'fixed') {
+        $discountedPrice = $price - $value;
+    } else {
+        $discountedPrice = $price;
+    }
+
+    return number_format(max($discountedPrice, 0), 2, '.', '');
+}
 
 function chocoletras_shortCode()
 {
+
+    
 
     if (isset($_GET['abandoned'])) {
         ?>
@@ -53,7 +80,21 @@ function chocoletras_shortCode()
                       </script>';
                 return;
             }
-    
+
+            
+            $priceTotal = $result['precio'];
+
+    // Retrieve coupon parameter from URL
+    $couponParam = isset($_GET['coupon']) ? sanitize_text_field($_GET['coupon']) : '';
+
+    // Check and apply coupon discount
+    if ($couponParam) {
+        $discount = getCouponDiscount($couponParam);
+        if ($discount) {
+            $priceTotal = applyCouponDiscount($priceTotal, $discount['type'], $discount['value']);
+        }
+    }
+
             // Map the data if necessary
             $data = [
                 'inserted_id' => $result['id'],
@@ -88,6 +129,7 @@ function chocoletras_shortCode()
             echo 'No order found with the given ID.';
             $result = [];
         }
+
     }    
 
     ob_start();
@@ -110,11 +152,19 @@ function chocoletras_shortCode()
                                     }   
                                 }
                             </style>
+                            <?php if (!empty($result)) { ?>
+                                <img class="dummyImg" src="<?php echo site_url() . $result['featured']; ?>" alt="">
+                            <?php } else { ?>
                             <img class="dummyImg" src="<?php echo site_url() . $getProductBanner['productBanner']; ?>" alt="">
-                        <?php } else { ?>
+                            <?php } 
+                        } else { ?>
+                        <?php if (!empty($result)) { ?>
+                                <img class="dummyImg" src="<?php echo site_url() . $result['featured']; ?>" alt="">
+                            <?php } else { ?>
                             <p class="dummyImg">Crea <span class="typed-text"></span><span class="cursor blink">&nbsp;</span>
                             </p>
-                        <?php } ?>
+                        <?php } 
+                    } ?>
                     </div>
                 </div>
 
@@ -363,9 +413,12 @@ function chocoletras_shortCode()
                                         </div>
                                         <div class="col-5">
                                             <h2 class="steps">
+                                            <?php if (!empty($result)) {
+                                                echo '<del style="color:red; font-size:18px;"> '. $result['precio'] .'</del>';
+                                             } ?>
                                                 <b class="priceCounter"><?php
                                                 if (!empty($result)) {
-                                                    echo $result['precio'];
+                                                    echo $priceTotal;
                                                 } else{
                                                      echo $getOrderData['priceTotal'];
                                                  } ?></b>
@@ -373,24 +426,23 @@ function chocoletras_shortCode()
                                             </h2>
                                         </div>
                                     </div>
-                                <?php if (!empty($result)) {    
+                                <?php
+                                // echo '<pre>';
+                                // print_r($result);
+                                // echo '</pre>';
+                                if (!empty($result)) {    
                                     $fraseArray = json_decode($result['frase'], true);
                                     ?>
                                     <div class="ordersPanel">
                                         <?php
                                         $scCounter = 0;
                                         foreach ($fraseArray as $frase) {
-                                            if (!empty($result)) {  
                                                 $screenshotUrl = json_decode($result['screens'], true);
-                                                echo $screenshotUrl;
-                                            } else {
-                                                $screenshotUrl = isset($getOrderData['screenshots'][$scCounter]) ? $getOrderData['screenshots'][$scCounter] : '';
-                                            }
                                             ?>
 
                                             <div class="orderDetails">
                                                 <div class="orderThumb">
-                                                    <img src="<?php echo get_site_url() . $screenshotUrl; ?>" alt="">
+                                                    <img src="<?php echo get_site_url() . $screenshotUrl[$scCounter]; ?>" alt="<?php echo $frase; ?>">
                                                 </div>
                                                 <div class="orderData">
                                                     <p>Frase: <?php echo $frase; ?></p>
@@ -411,7 +463,7 @@ function chocoletras_shortCode()
                                                             echo $date; }?>
                                                         </div>
                                                         <div class="deliveryDate">
-                                                            <?php if ($getOrderData['shippingType'] === 'on') { ?>
+                                                            <?php if ($result->express  === 'on') { ?>
                                                                 <svg fill="#fff" width="16px" height="16px" viewBox="0 0 32 32"
                                                                     xmlns="http://www.w3.org/2000/svg">
                                                                     <path

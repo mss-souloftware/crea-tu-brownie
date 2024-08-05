@@ -35,24 +35,39 @@ require_once (plugin_dir_path(__FILE__) . '/abandoned/abandoned-cart-functions.p
 
 add_filter('cron_schedules', 'add_custom_cron_intervals');
 
-function add_custom_cron_intervals($schedules)
-{
-  $schedules['minute'] = array(
-    'interval' => 60,
-    'display' => __('Every Minute')
-  );
-  return $schedules;
+function add_custom_cron_intervals($schedules) {
+    $interval = get_option('abandoned_cart_minutes', 1) * 60; // Minutes to seconds
+
+    // Add a custom interval
+    $schedules['custom_interval'] = array(
+        'interval' => $interval,
+        'display' => __('Custom Interval')
+    );
+
+    return $schedules;
 }
 
 // Schedule event on init hook
-add_action('init', 'schedule_abandoned_cart_check');
+function schedule_abandoned_cart_check() {
+  $abandoned_cart_enable = get_option('abandoned_cart_enable', 0);
+  
+  // If abandoned cart is disabled, unschedule the event
+  if (!$abandoned_cart_enable) {
+      if ($timestamp = wp_next_scheduled('check_abandoned_cart')) {
+          wp_unschedule_event($timestamp, 'check_abandoned_cart');
+      }
+      return;
+  }
 
-function schedule_abandoned_cart_check()
-{
+  // Get the interval from settings, default to 60 seconds if not set
+  $interval = get_option('abandoned_cart_minutes', 1) * 60;
+
   if (!wp_next_scheduled('check_abandoned_cart')) {
-    wp_schedule_event(time(), 'minute', 'check_abandoned_cart');
+      wp_schedule_event(time(), 'custom_interval', 'check_abandoned_cart');
   }
 }
+add_action('init', 'schedule_abandoned_cart_check');
+
 function clt_admin_style()
 {
   wp_enqueue_style('faltpickrForPluginBackend', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css', array(), false);

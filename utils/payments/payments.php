@@ -16,8 +16,10 @@ $decodedParams = json_decode($decodec, true);
 $codigoRespuesta = $decodedParams["Ds_Response"];
 $payerID = $decodedParams["Ds_Order"];
 $rowID = $decodedParams["Ds_MerchantData"];
+$paidAmount = $decodedParams["Ds_Amount"];
 $paymentType = $decodedParams["Ds_TransactionType"];
 
+$formattedAmount = number_format($paidAmount / 100, 2, '.', '');
 
 $claveModuloAdmin = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
 $signatureCalculada = $miObj->createMerchantSignatureNotif($claveModuloAdmin, $params);
@@ -34,9 +36,10 @@ if ($signatureCalculada === $signatureRecibida) {
             $paymentDescription = ($paymentType == "0") ? "Redsys" : (($paymentType == "7") ? "Bizum" : $paymentType);
 
             $update_query = $wpdb->prepare(
-                "UPDATE $tablename SET uoi = %s, pagoRealizado = 1, payment = %s WHERE id = %s",
+                "UPDATE $tablename SET uoi = %s, pagoRealizado = 1, payment = %s, precio = %f WHERE id = %s",
                 $payerID,
                 $paymentDescription,
+                $formattedAmount,
                 $rowID
             );
             $wpdb->query($update_query);
@@ -243,8 +246,21 @@ function paymentFrontend()
         require_once ($redsysAPIwoo);
 
         $miObj = new RedsysAPI;
+
+        $priceTotal = $result['precio'];
+
+        // Retrieve coupon parameter from URL
+        $couponParam = isset($_GET['coupon']) ? sanitize_text_field($_GET['coupon']) : '';
+
+        // Check and apply coupon discount
+        if ($couponParam) {
+            $discount = getCouponDiscount($couponParam);
+            if ($discount) {
+                $priceTotal = applyCouponDiscount($priceTotal, $discount['type'], $discount['value']);
+            }
+        }
         if (!empty($result)) {
-            $amount = $result['precio'];
+            $amount = $priceTotal;
             $insertedID = $result['id'];
         } else {
             $amount = $getOrderData['priceTotal'];
@@ -253,7 +269,7 @@ function paymentFrontend()
         echo 'checkingamount' . $amount;
         $amount = $amount ? str_replace('.', '', $amount) : 'null';
         $amount = $amount ? explode('_', $amount)[0] : 'null';
-
+        
         // Check the length of the amount
         if (strlen($amount) == 3) {
             // Add "0" at the end
@@ -262,7 +278,8 @@ function paymentFrontend()
             // Add "00" at the end
             $amount = $amount . "00";
         }
-
+        
+        echo 'final ammount' . $amount;
 
         $miObj->setParameter("DS_MERCHANT_AMOUNT", $amount);
         $miObj->setParameter("DS_MERCHANT_ORDER", $orderNumberRedsys);

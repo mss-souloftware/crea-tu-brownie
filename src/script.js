@@ -302,7 +302,7 @@
 
         $("#ctf_form").on("submit", function (event) {
             event.preventDefault();
-            // loader.css('height', '100%');
+            loader.css('height', '100%');
             console.log('submission');
             const mainText = [$('#getText').val()];
             const chocoType = $('#chocoBase').val();
@@ -344,6 +344,7 @@
                 uoi: uoi,
                 coupon: coupon,
                 screens: JSON.stringify(screenshotPaths),
+                featured: typewriterScreenshotPath,
                 picDate: picDate,
                 shippingType: shippingType,
                 nonce: ajax_variables.nonce
@@ -398,7 +399,7 @@
                     console.error("AJAX request failed: ", status, error);
                 },
                 complete: function () {
-                    // location.reload();
+                    location.reload();
                 }
             });
         });

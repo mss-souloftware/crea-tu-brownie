@@ -104,7 +104,7 @@ function chocoletraMenu_ftn()
           }
           if ($value->message != "") {
             echo getMessage($value->message);
-          } else{
+          } else {
             echo '<span><b>No Mensaje</b></span>';
           }
           echo '</div>';
@@ -118,13 +118,16 @@ function chocoletraMenu_ftn()
                   <span><b>Codigo Postal: </b>' . $value->cp . '</span>
                   <span><b>Fecha de Entrega: </b>' . $value->fechaEntrega . '</span>
                   <span><b>Pagado: </b>' . $value->payment . '</span>';
-                  if ($value->cart == 0 && $value->pagoRealizado == 0) {
-                    echo '<span><b>Estado Abandonado: </b>Pendiente 🕐</span>';
-                  } else if($value->cart == 1){
-                    echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
-                  } else{
-                    echo '';
-                  }
+                if ($value->cart == 0 && $value->pagoRealizado == 0) {
+                  echo '<span><b>Estado Abandonado: </b>Pendiente 🕐</span>';
+                } else if ($value->cart == 1 && $value->pagoRealizado == 0) {
+                  echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
+                } else if ($value->cart == 1 && $value->pagoRealizado == 1) {
+                  echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
+                } else {
+                  echo '';
+                }
+
           if ($value->coupon) {
             echo '<span><b>Cupón: </b>' . $value->coupon . '</span>';
           }

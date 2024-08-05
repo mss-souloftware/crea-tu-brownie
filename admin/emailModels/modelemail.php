@@ -168,15 +168,21 @@ function typeabandoned($data)
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Frases - ' . $fraseCount . '</p>
-                        </li>
-                        <li>
+                        </li>';
+                        if ($data->express === 'on') {
+                            $email .= '<li>
+                            <p style="font-size: 14px; line-height: 120%; color: #000;">Envío Express</p>
+                        </li>';
+                        } else{
+                        $email .= '<li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Envío Normal</p>
                         </li>';
-    if ($data->coupon) {
-        $email .= '<li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000;">Cupón</p>
-                        </li>';
-    }
+                        }
+    // if ($data->coupon) {
+    //     $email .= '<li>
+    //                         <p style="font-size: 14px; line-height: 120%; color: #000;">Cupón</p>
+    //                     </li>';
+    // }
     $email .= '</ul>
                 </td>
 
@@ -186,13 +192,19 @@ function typeabandoned($data)
                             <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $data->precio . '</p>
                         </li>
                         <li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">' . get_option('precEnvio') . '</p>
+                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">';
+                            if ($data->express === 'on') {
+                                $email .= '€' . get_option('expressShiping');
+                            } else{
+                                $email .= '€' . get_option('precEnvio');
+                            }
+                            $email .= '</p>
                         </li>';
-    if ($data->coupon) {
-        $email .= '<li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">- €10</p>
-                        </li> ';
-    }
+    // if ($data->coupon) {
+    //     $email .= '<li>
+    //                         <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">- €10</p>
+    //                     </li> ';
+    // }
 
     $email .= ' </ul>
                 </td>
@@ -229,15 +241,15 @@ function typeabandoned($data)
                 <td colspan="2">
                     <p style="text-align: center; margin: 25px 0;">
                         <span style="color: #ffffff; line-height: 1; font-size: 14px;">
-                            <a rel="noopener" https://creatubrownie.com/choco-store/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/choco-store/" target="_blank"
                                 style="color: #ffffff;">Tienda</a> |
-                            <a rel="noopener" https://creatubrownie.com/crea-tu-frase/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/crea-tu-frase/" target="_blank"
                                 style="color: #ffffff;">Frase</a> |
-                            <a rel="noopener" https://creatubrownie.com/my-account/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/my-account/" target="_blank"
                                 style="color: #ffffff;">Cuenta </a>|
-                            <a rel="noopener" https://creatubrownie.com/about/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/about/" target="_blank"
                                 style="color: #ffffff;">Quienes somos </a>|
-                            <a rel="noopener" https://creatubrownie.com/contact-us/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/contact-us/" target="_blank"
                                 style="color: #ffffff;">Contacto</a>
                         </span>
                     </p>
@@ -400,15 +412,21 @@ function typenuevo($data)
                     <ul style="list-style: none; padding: 0; margin: 0;">
                         <li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Frases - ' . $fraseCount . '</p>
-                        </li>
-                        <li>
+                        </li>';
+                        if ($data->express === 'on') {
+                            $email .= '<li>
+                            <p style="font-size: 14px; line-height: 120%; color: #000;">Envío Express</p>
+                        </li>';
+                        } else{
+                        $email .= '<li>
                             <p style="font-size: 14px; line-height: 120%; color: #000;">Envío Normal</p>
                         </li>';
-    if ($data->coupon) {
-        $email .= '<li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000;">Cupón</p>
-                        </li>';
-    }
+                        }
+    //              if ($data->coupon) {
+    //     $email .= '<li>
+    //                         <p style="font-size: 14px; line-height: 120%; color: #000;">Cupón</p>
+    //                     </li>';
+    // }
     $email .= '</ul>
                 </td>
 
@@ -418,13 +436,19 @@ function typenuevo($data)
                             <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">€' . $data->precio . '</p>
                         </li>
                         <li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">' . get_option('precEnvio') . '</p>
+                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">';
+                            if ($data->express === 'on') {
+                                $email .= '€' . get_option('expressShiping');
+                            } else{
+                                $email .= '€' . get_option('precEnvio');
+                            }
+                            $email .= '</p>
                         </li>';
-    if ($data->coupon) {
-        $email .= '<li>
-                            <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">- €10</p>
-                        </li> ';
-    }
+    // if ($data->coupon) {
+    //     $email .= '<li>
+    //                         <p style="font-size: 14px; line-height: 120%; color: #000; text-align: right;">- €10</p>
+    //                     </li> ';
+    // }
 
     $email .= ' </ul>
                 </td>
@@ -462,15 +486,15 @@ function typenuevo($data)
                 <td colspan="2">
                     <p style="text-align: center; margin: 25px 0;">
                         <span style="color: #ffffff; line-height: 1; font-size: 14px;">
-                            <a rel="noopener" https://creatubrownie.com/choco-store/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/choco-store/" target="_blank"
                                 style="color: #ffffff;">Tienda</a> |
-                            <a rel="noopener" https://creatubrownie.com/crea-tu-frase/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/crea-tu-frase/" target="_blank"
                                 style="color: #ffffff;">Frase</a> |
-                            <a rel="noopener" https://creatubrownie.com/my-account/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/my-account/" target="_blank"
                                 style="color: #ffffff;">Cuenta </a>|
-                            <a rel="noopener" https://creatubrownie.com/about/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/about/" target="_blank"
                                 style="color: #ffffff;">Quienes somos </a>|
-                            <a rel="noopener" https://creatubrownie.com/contact-us/" target="_blank"
+                            <a rel="noopener" href="https://creatubrownie.com/contact-us/" target="_blank"
                                 style="color: #ffffff;">Contacto</a>
                         </span>
                     </p>
