@@ -128,7 +128,7 @@ function chocoletrasInsertScripts()
   // wp_enqueue_script('chocoletrasScript', plugins_url('../src/main.js', __FILE__), array(), '1.0.0', true);
   wp_enqueue_style('pluginStylesClt', plugins_url('../src/css/clt_style.css', __FILE__), array(), false);
 
-  if (is_page('crea-tu-frase')) {
+  if (is_page('crea-tu-brownie')) {
     wp_enqueue_style('bootstrapForPlugin', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), false);
   }
 
