@@ -7,7 +7,6 @@
  * @subpackage M. Sufyan Shaikh
  */
 
-
 function responseForm()
 {
     try {
@@ -23,7 +22,7 @@ function responseForm()
 function confirmAllIsReady()
 {
     setcookie('chocol_price', '', time() - 3600);
-    $getData = array('mainText', 'chocoType', 'priceTotal', 'fname', 'email', 'tel', 'postal', 'city', 'address', 'province', 'message', 'picDate', 'shippingType', 'nonce', 'uoi', 'coupon', 'screens', 'featured');
+    $getData = array('mainText', 'chocoType', 'priceTotal', 'fname', 'email', 'tel', 'postal', 'city', 'address', 'province', 'message', 'picDate', 'shippingType', 'nonce', 'uoi', 'coupon', 'screens', 'featured', 'affiliateID');
 
     $confirm_error = array();
 
@@ -74,8 +73,8 @@ function saveDataInDatabase($datos)
     $tablename = $wpdb->prefix . 'chocoletras_plugin';
 
     $query = $wpdb->prepare(
-        "INSERT INTO $tablename (frase, chocotype, precio, nombre, email, telefono, cp, ciudad, province, message, direccion, nonce, fechaEntrega, express, uoi, coupon, screens, featured) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        "INSERT INTO $tablename (frase, chocotype, precio, nombre, email, telefono, cp, ciudad, province, message, direccion, nonce, fechaEntrega, express, uoi, coupon, screens, featured, affiliate_id) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
         $sanitizeData['mainText'],
         $sanitizeData['chocoType'],
         $sanitizeData['priceTotal'],
@@ -93,7 +92,8 @@ function saveDataInDatabase($datos)
         $sanitizeData['uoi'],
         $sanitizeData['coupon'],
         $sanitizeData['screens'],
-        $sanitizeData['featured']
+        $sanitizeData['featured'],
+        $sanitizeData['affiliateID']
     );
 
     try {
@@ -113,27 +113,68 @@ function saveDataInDatabase($datos)
             throw new Exception("Failed to retrieve inserted ID.");
         }
 
+        // Fetch affiliate ID from wp_yith_wcaf_affiliates table based on affiliateID
+        $affiliate_table = $wpdb->prefix . 'yith_wcaf_affiliates';
+        $affiliate_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT ID FROM $affiliate_table WHERE user_id = %d",
+            $sanitizeData['affiliateID']
+        ));
+
+        // Check if affiliateID is provided
+        if (!empty($sanitizeData['affiliateID'])) {
+            // Fetch affiliate ID from wp_yith_wcaf_affiliates table based on affiliateID
+            $affiliate_table = $wpdb->prefix . 'yith_wcaf_affiliates';
+            $affiliate_id = $wpdb->get_var($wpdb->prepare(
+                "SELECT ID FROM $affiliate_table WHERE user_id = %d",
+                $sanitizeData['affiliateID']
+            ));
+
+            if (empty($affiliate_id)) {
+                throw new Exception("Affiliate ID not found.");
+            }
+
+            // Insert data into wp_yith_wcaf_commissions table
+            $commission_table = $wpdb->prefix . 'yith_wcaf_commissions';
+            $last_line_item_id = $wpdb->get_var("SELECT MAX(line_item_id) FROM $commission_table");
+
+            $line_item_id = $last_line_item_id ? $last_line_item_id + 1 : 1;
+            $rate = get_option('yith_wcaf_general_rate', 0);
+            $amount = $sanitizeData['priceTotal'] * ($rate / 100);
+            $current_date = current_time('mysql');
+
+            $commission_query = $wpdb->prepare(
+                "INSERT INTO $commission_table (order_id, line_item_id, product_id, product_name, affiliate_id, rate, line_total, amount, refunds, status, created_at, last_edit) 
+        VALUES (%d, %d, %d, %s, %d, %f, %f, %f, %d, %s, %s, %s)",
+                $inserted_id,
+                $line_item_id,
+                $inserted_id,
+                $sanitizeData['mainText'],
+                $affiliate_id, // Use the fetched affiliate_id
+                $rate,
+                $sanitizeData['priceTotal'],
+                $amount,
+                0, // refunds
+                'not-confirmed', // status
+                $current_date, // created_at
+                $current_date  // last_edit
+            );
+
+            // Execute the commission query and check for errors
+            $commission_result = $wpdb->query($commission_query);
+            if ($commission_result === false) {
+                throw new Exception("Failed to insert commission data: " . $wpdb->last_error);
+            }
+        }
+
+
     } catch (Exception $error) {
         error_log($error->getMessage()); // Log the error message
         throw new Exception("Database error: " . $error->getMessage());
     }
 
-    // $confirmSaveCookie;
-    // $combinatedNameOption = $wpdb->insert_id . $sanitizeData['nonce'];
-    // if ($result === 1) {
-    //     // Saving data to cookie
-    //     $cookieData = $sanitizeData['priceTotal'] . '_' . $sanitizeData['mainText'] . '_' . $sanitizeData['tel'] . '_' . $sanitizeData['uoi'];
-    //     if (get_option($combinatedNameOption . '-chocol_price')) {
-    //         $confirmSaveCookie = update_option($combinatedNameOption . '-chocol_price', $cookieData);
-    //     } else {
-    //         $confirmSaveCookie = add_option($combinatedNameOption . '-chocol_price', $cookieData);
-    //     }
-    // }
-
     return $result === 1 ? array(
         "Status" => true,
         "inserted_id" => $inserted_id,
-        // "nonce" => $combinatedNameOption . '-chocol_price',
         "amount" => $sanitizeData['priceTotal'],
         "frase" => $sanitizeData['mainText'],
         "telef" => $sanitizeData['tel'],
@@ -142,7 +183,6 @@ function saveDataInDatabase($datos)
         "fcity" => $sanitizeData['city'],
         "faddress" => $sanitizeData['address'],
         "fuoi" => $sanitizeData['uoi'],
-        "fcoupon" => $sanitizeData['coupon'],
-        // "cookie" => $confirmSaveCookie
+        "fcoupon" => $sanitizeData['coupon']
     ) : array("Status" => 400);
 }

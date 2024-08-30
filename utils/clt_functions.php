@@ -10,6 +10,7 @@
 
 
 require_once plugin_dir_path(__FILE__) . 'shortcode.php';
+require_once plugin_dir_path(__FILE__) . 'affiliate-panel.php';
 require_once plugin_dir_path(__FILE__) . 'checkoutStripe.php';
 require_once plugin_dir_path(__FILE__) . 'clt_saveInfo.php';
 require_once plugin_dir_path(__FILE__) . '../admin/outputBackend.php';
@@ -19,6 +20,7 @@ require_once plugin_dir_path(__FILE__) . '../admin/calander/calander.php';
 require_once plugin_dir_path(__FILE__) . '../admin/coupons/coupons.php';
 require_once plugin_dir_path(__FILE__) . '../admin/payments/payments.php';
 require_once plugin_dir_path(__FILE__) . '../admin/abandoned/abandoned.php';
+require_once plugin_dir_path(__FILE__) . '../admin/affiliate/affiliate.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/itemsEmail.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/reportsPage.php';
 require_once plugin_dir_path(__FILE__) . '../admin/opciones/stripe.php';
@@ -31,39 +33,41 @@ require_once plugin_dir_path(__FILE__) . './savestripeoption/stripeSession.php';
 require_once plugin_dir_path(__FILE__) . './report/saveReportToDatabase.php';
 require_once plugin_dir_path(__FILE__) . './report/deletteReport.php';
 
-require_once (plugin_dir_path(__FILE__) . '/abandoned/abandoned-cart-functions.php');
+require_once(plugin_dir_path(__FILE__) . '/abandoned/abandoned-cart-functions.php');
 
 add_filter('cron_schedules', 'add_custom_cron_intervals');
 
-function add_custom_cron_intervals($schedules) {
-    $interval = get_option('abandoned_cart_minutes', 1) * 60; // Minutes to seconds
+function add_custom_cron_intervals($schedules)
+{
+  $interval = get_option('abandoned_cart_minutes', 1) * 60; // Minutes to seconds
 
-    // Add a custom interval
-    $schedules['custom_interval'] = array(
-        'interval' => $interval,
-        'display' => __('Custom Interval')
-    );
+  // Add a custom interval
+  $schedules['custom_interval'] = array(
+    'interval' => $interval,
+    'display' => __('Custom Interval')
+  );
 
-    return $schedules;
+  return $schedules;
 }
 
 // Schedule event on init hook
-function schedule_abandoned_cart_check() {
+function schedule_abandoned_cart_check()
+{
   $abandoned_cart_enable = get_option('abandoned_cart_enable', 0);
-  
+
   // If abandoned cart is disabled, unschedule the event
   if (!$abandoned_cart_enable) {
-      if ($timestamp = wp_next_scheduled('check_abandoned_cart')) {
-          wp_unschedule_event($timestamp, 'check_abandoned_cart');
-      }
-      return;
+    if ($timestamp = wp_next_scheduled('check_abandoned_cart')) {
+      wp_unschedule_event($timestamp, 'check_abandoned_cart');
+    }
+    return;
   }
 
   // Get the interval from settings, default to 60 seconds if not set
   $interval = get_option('abandoned_cart_minutes', 1) * 60;
 
   if (!wp_next_scheduled('check_abandoned_cart')) {
-      wp_schedule_event(time(), 'custom_interval', 'check_abandoned_cart');
+    wp_schedule_event(time(), 'custom_interval', 'check_abandoned_cart');
   }
 }
 add_action('init', 'schedule_abandoned_cart_check');
@@ -283,7 +287,8 @@ add_action('wp_ajax_reportForm', 'saveReportData');
 //=============================================================//
 define('PROCESS_FRASE', plugins_url('clt_process_form.php', __FILE__));
 
-add_shortcode('brownie', 'chocoletras_shortCode');
+add_shortcode('chocoletra', 'chocoletras_shortCode');
+add_shortcode('affiliate_panel', 'chocoletras_affiliate');
 
 // chocoletras admin menu
 add_action('admin_menu', 'clt_adminMenu');
@@ -304,33 +309,46 @@ add_action('admin_menu', 'addSubmenuChocoletras');
 function addSubmenuChocoletras()
 {
   add_submenu_page(
-    'clt_amin',
-    'Todos los ajustes',
-    'Ajustes',
-    'install_plugins',
-    'set_options',
-    'submenuOutput',
+    'clt_amin',           // Parent slug
+    'Todos los ajustes',   // Page title
+    'Ajustes',             // Menu title
+    'manage_options',      // Capability (changed to manage_options)
+    'set_options',         // Menu slug
+    'submenuOutput',       // Function to display content
     2
   );
+
   add_submenu_page(
-    'clt_amin', // Parent slug
-    'Calendario', // Page title
-    'Calendario', // Menu title
-    'manage_options',
-    'calendar_settings',
-    'calanderOutput',
+    'clt_amin',           // Parent slug
+    'Calendario',         // Page title
+    'Calendario',         // Menu title
+    'manage_options',      // Capability
+    'calendar_settings',   // Menu slug
+    'calanderOutput',      // Function to display content
     3
   );
+
   add_submenu_page(
-    'clt_amin', // Parent slug
-    'Cupones', // Page title
-    'Cupones', // Menu title
-    'manage_options',
-    'coupons_settings',
-    'coupon_settings_page',
+    'clt_amin',           // Parent slug
+    'Cupones',            // Page title
+    'Cupones',            // Menu title
+    'manage_options',      // Capability
+    'coupons_settings',    // Menu slug
+    'coupon_settings_page',// Function to display content
     4
   );
+
+  add_submenu_page(
+    'clt_amin',           // Parent slug
+    'Socios afiliados',   // Page title
+    'Socios afiliados',   // Menu title
+    'manage_options',      // Capability
+    'socios_afiliados',    // Menu slug
+    'affiliate_adminpanel',// Function to display content
+    8
+  );
 }
+
 
 
 // add_action('admin_menu', 'addSubmenuStrypeKeys');
@@ -386,7 +404,7 @@ function addSubmenuAbandoned()
     'install_plugins',
     'abandoned_cart',
     'abandonedOutput',
-    6
+    7
   );
 }
 

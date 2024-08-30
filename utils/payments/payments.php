@@ -1,4 +1,6 @@
 <?php
+// $notNull = '';
+// if ($notNull !== '') {
 require_once plugin_dir_path(__FILE__) . '../../admin/outPutMail/sendEmail.php';
 
 $redsysAPIwoo = WP_PLUGIN_DIR . '/redsyspur/apiRedsys/apiRedsysFinal.php';
@@ -44,6 +46,34 @@ if ($signatureCalculada === $signatureRecibida) {
             );
             $wpdb->query($update_query);
 
+            // Fetch the commission data from wp_yith_wcaf_commissions table
+            $commissions_table = $wpdb->prefix . 'yith_wcaf_commissions';
+            $commission_query = $wpdb->prepare("SELECT affiliate_id, amount FROM $commissions_table WHERE order_id = %s", $rowID);
+            $commission_result = $wpdb->get_row($commission_query);
+
+            if ($commission_result) {
+                $affiliate_id = $commission_result->affiliate_id;
+                $commission_amount = $commission_result->amount;
+
+                // Update the commission status to 'pending'
+                $update_commission_query = $wpdb->prepare(
+                    "UPDATE $commissions_table SET status = %s WHERE order_id = %s",
+                    'pending',
+                    $rowID
+                );
+                $wpdb->query($update_commission_query);
+
+                // Update the affiliate earnings
+                $affiliates_table = $wpdb->prefix . 'yith_wcaf_affiliates';
+                $update_affiliate_query = $wpdb->prepare(
+                    "UPDATE $affiliates_table SET earnings = earnings + %f, conversion = conversion + 1 WHERE ID = %d",
+                    $commission_amount,
+                    $affiliate_id
+                );
+                $wpdb->query($update_affiliate_query);
+
+            }
+
             // Prepare email data
             $upcomingData = [
                 'email' => $result->email, // Adjust as necessary
@@ -82,6 +112,7 @@ if (isset($_GET['payment']) && $_GET['payment'] == true) {
         console.log("Payment True");
     </script>
 <?php }
+// }
 function paymentFrontend()
 {
     if (isset($_GET['abandoned'])) {
@@ -209,6 +240,35 @@ function paymentFrontend()
 
                         $wpdb->query($update_query);
                         log_ipn("Database updated for order ID: " . $item_number);
+
+
+                        // Fetch the commission data from wp_yith_wcaf_commissions table
+                        $commissions_table = $wpdb->prefix . 'yith_wcaf_commissions';
+                        $commission_query = $wpdb->prepare("SELECT affiliate_id, amount FROM $commissions_table WHERE order_id = %s", $item_number);
+                        $commission_result = $wpdb->get_row($commission_query);
+
+                        if ($commission_result) {
+                            $affiliate_id = $commission_result->affiliate_id;
+                            $commission_amount = $commission_result->amount;
+
+                            // Update the commission status to 'pending'
+                            $update_commission_query = $wpdb->prepare(
+                                "UPDATE $commissions_table SET status = %s WHERE order_id = %s",
+                                'pending',
+                                $item_number
+                            );
+                            $wpdb->query($update_commission_query);
+
+                            // Update the affiliate earnings
+                            $affiliates_table = $wpdb->prefix . 'yith_wcaf_affiliates';
+                            $update_affiliate_query = $wpdb->prepare(
+                                "UPDATE $affiliates_table SET earnings = earnings + %f, conversion = conversion + 1 WHERE ID = %d",
+                                $commission_amount,
+                                $affiliate_id
+                            );
+                            $wpdb->query($update_affiliate_query);
+
+                        }
 
                         $upcomingData = [
                             'email' => $result->email,

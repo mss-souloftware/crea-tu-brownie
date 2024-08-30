@@ -375,6 +375,12 @@ function chocoletras_shortCode()
                                         <!-- <input type="submit" name="next" class="next action-button" value="Next" /> -->
                                         <input type="submit" name="next" class="action-button" value="Continuar" />
                                     </div>
+
+                                    <?php
+                                        $username = isset($_GET['affiliate']) ? sanitize_text_field($_GET['affiliate']) : '';
+                                        ?>
+                                    <input type="hidden" id="affiliateUserID" value="<?php echo $username; ?>"
+                                        readonly>
                                     <input type="hidden" id="precLetras" value="<?php echo get_option('precLetra'); ?>"
                                         readonly>
                                     <input type="hidden" id="precCoraz" value="<?php echo get_option('precCoraz'); ?>"
