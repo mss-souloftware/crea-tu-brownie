@@ -1,7 +1,7 @@
 <?php
 /**
  * 
- * @package Crea Tu Frase
+ * @package Crea Tu Brownie
  * @subpackage M. Sufyan Shaikh
  * 
  */
@@ -93,6 +93,7 @@ function chocoletraMenu_ftn()
                 <span><b>Nombre: </b>' . $value->nombre . '</span>
                 <span><b>Email: </b>' . $value->email . '</span>
                 <span><b>Telefono: </b>' . $value->telefono . '</span>
+                <span><b>Tipo de chocolate: </b>' . $value->chocotype . '</span>
                 <span><b>Frases: (' . $fraseCount . ')</b></span>';
           if (is_array($repareFrase)) {
             foreach ($repareFrase as $frase) {
@@ -118,15 +119,15 @@ function chocoletraMenu_ftn()
                   <span><b>Codigo Postal: </b>' . $value->cp . '</span>
                   <span><b>Fecha de Entrega: </b>' . $value->fechaEntrega . '</span>
                   <span><b>Pagado: </b>' . $value->payment . '</span>';
-                if ($value->cart == 0 && $value->pagoRealizado == 0) {
-                  echo '<span><b>Estado Abandonado: </b>Pendiente 🕐</span>';
-                } else if ($value->cart == 1 && $value->pagoRealizado == 0) {
-                  echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
-                } else if ($value->cart == 1 && $value->pagoRealizado == 1) {
-                  echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
-                } else {
-                  echo '';
-                }
+          if ($value->cart == 0 && $value->pagoRealizado == 0) {
+            echo '<span><b>Estado Abandonado: </b>Pendiente 🕐</span>';
+          } else if ($value->cart == 1 && $value->pagoRealizado == 0) {
+            echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
+          } else if ($value->cart == 1 && $value->pagoRealizado == 1) {
+            echo '<span><b>Estado Abandonado: </b>Expedido ✔</span>';
+          } else {
+            echo '';
+          }
 
           if ($value->coupon) {
             echo '<span><b>Cupón: </b>' . $value->coupon . '</span>';
@@ -135,6 +136,15 @@ function chocoletraMenu_ftn()
 
           echo '<div class="infoPanelInnn">
           <h2>Estado del pedido</h2> ';
+          $user_id = $value->affiliate_id;
+
+          $first_name = get_user_meta($user_id, 'first_name', true);
+          $last_name = get_user_meta($user_id, 'last_name', true);
+          $full_name = trim($first_name . ' ' . $last_name);
+
+          if ($user_id != '') {
+            echo '<span><b>Usuario afiliado: </b>' . $full_name . '</span>';
+          }
           echo useractions($value->id, $value->email, $value->enProceso, $value->enviado);
           echo '</div>';
           echo ' </li>';

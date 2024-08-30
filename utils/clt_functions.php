@@ -287,7 +287,7 @@ add_action('wp_ajax_reportForm', 'saveReportData');
 //=============================================================//
 define('PROCESS_FRASE', plugins_url('clt_process_form.php', __FILE__));
 
-add_shortcode('chocoletra', 'chocoletras_shortCode');
+add_shortcode('brownie', 'chocoletras_shortCode');
 add_shortcode('affiliate_panel', 'chocoletras_affiliate');
 
 // chocoletras admin menu

@@ -319,6 +319,7 @@
             const message = $("#message").val();
             const uoi = $("#uniqueOrderID").val();
             const coupon = $("#usedCoupon").val();
+            const affiliateID = $("#affiliateUserID").val();
 
             if (!picDate) {
                 picDate = new Date().toISOString().slice(0, 10);
@@ -346,6 +347,7 @@
                 screens: JSON.stringify(screenshotPaths),
                 featured: typewriterScreenshotPath,
                 picDate: picDate,
+                affiliateID: affiliateID,
                 shippingType: shippingType,
                 nonce: ajax_variables.nonce
             };
@@ -382,6 +384,7 @@
                             message: message,
                             uoi: uoi,
                             coupon: coupon,
+                            affiliateID: affiliateID,
                             screenshots: screenshotPaths,
                             productBanner: typewriterScreenshotPath,
                         };

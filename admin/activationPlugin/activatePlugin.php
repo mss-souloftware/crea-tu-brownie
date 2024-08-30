@@ -2,7 +2,7 @@
 
 /**
  * 
- * @package Crea Tu Frase
+ * @package Crea Tu Brownie
  * @subpackage M. Sufyan Shaikh
  * 
  */
